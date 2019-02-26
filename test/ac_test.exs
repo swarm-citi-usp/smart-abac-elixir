@@ -5,9 +5,19 @@ defmodule ACTest do
 
   test "match single request attribute against policy attribute" do
     policy_attr = %Attr{data_type: "string", name: "Type", value: "Person"}
-    assert PDP.match_attr({"Type", "Person"}, policy_attr)
-    refute PDP.match_attr({"Id", "Person"}, policy_attr)
-    refute PDP.match_attr({"Type", "Camera"}, policy_attr)
+    assert PDP.match_attr(policy_attr.data_type, {"Type", "Person"}, policy_attr)
+    refute PDP.match_attr(policy_attr.data_type, {"Id", "Person"}, policy_attr)
+    refute PDP.match_attr(policy_attr.data_type, {"Type", "Camera"}, policy_attr)
+  end
+
+  test "match context against policy context" do
+    day_time_attr = %Attr{data_type: "time_window", name: "DateTime", value: "* * 6-22 * * *"}
+    refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 5  1 1 2019"}, day_time_attr)
+    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 6  1 1 2019"}, day_time_attr)
+    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 7  1 1 2019"}, day_time_attr)
+    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 21 1 1 2019"}, day_time_attr)
+    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 22 1 1 2019"}, day_time_attr)
+    refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 23 1 1 2019"}, day_time_attr)
   end
 
   test "match numerical ranges" do
@@ -97,5 +107,25 @@ defmodule ACTest do
     refute PDP.authorize(request, [policy_family])
     assert PDP.authorize(request, [policy_person])
     assert PDP.authorize(request, [policy_person, policy_family])
+
+    request =
+      Map.put(request, :context_attrs, %{
+        "DateTime" => "0 0 6  1 1 2019"
+      })
+
+    policy_person =
+      Map.put(policy_person, :context_attrs, [
+        %Attr{
+          data_type: "time_window",
+          name: "DateTime",
+          value: "* * 6-22 * * *"
+        }
+      ])
+
+    assert PDP.authorize(request, [policy_person])
+  end
+
+  @tag :skip
+  test "administrative policy" do
   end
 end
