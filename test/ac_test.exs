@@ -3,52 +3,6 @@ defmodule ACTest do
   doctest AC
   alias AC.{PDP, Attr, Policy}
 
-  test "authorize a request" do
-    policy_family = %Policy{
-      id: "...",
-      name: "Adult Home Control",
-      user_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "Person"},
-        %Attr{data_type: "string", name: "Role", value: "FamilyMember"},
-        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
-      ],
-      operations: ["all"],
-      object_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
-      ]
-    }
-
-    policy_person = %Policy{
-      id: "...",
-      name: "Adult Home Control",
-      user_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "Person"},
-        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
-      ],
-      operations: ["read"],
-      object_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
-      ]
-    }
-
-    request = %{
-      user_attrs: %{
-        "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
-        "Type" => "Person",
-        "Age" => 25
-      },
-      object_attrs: %{
-        "Type" => "AirConditioner",
-        "Location" => "Kitchen"
-      },
-      operations: ["read"]
-    }
-
-    refute PDP.authorize(request, [policy_family])
-    assert PDP.authorize(request, [policy_person])
-    assert PDP.authorize(request, [policy_person, policy_family])
-  end
-
   test "match single request attribute against policy attribute" do
     policy_attr = %Attr{data_type: "string", name: "Type", value: "Person"}
     assert PDP.match_attr({"Type", "Person"}, policy_attr)
@@ -97,5 +51,51 @@ defmodule ACTest do
              "update",
              "delete"
            ])
+  end
+
+  test "authorize a request" do
+    policy_family = %Policy{
+      id: "...",
+      name: "Adult Home Control",
+      user_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "Person"},
+        %Attr{data_type: "string", name: "Role", value: "FamilyMember"},
+        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+      ],
+      operations: ["all"],
+      object_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
+      ]
+    }
+
+    policy_person = %Policy{
+      id: "...",
+      name: "Adult Home Control",
+      user_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "Person"},
+        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+      ],
+      operations: ["read"],
+      object_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
+      ]
+    }
+
+    request = %{
+      user_attrs: %{
+        "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
+        "Type" => "Person",
+        "Age" => 25
+      },
+      object_attrs: %{
+        "Type" => "AirConditioner",
+        "Location" => "Kitchen"
+      },
+      operations: ["read"]
+    }
+
+    refute PDP.authorize(request, [policy_family])
+    assert PDP.authorize(request, [policy_person])
+    assert PDP.authorize(request, [policy_person, policy_family])
   end
 end
