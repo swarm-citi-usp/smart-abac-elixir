@@ -20,8 +20,32 @@ defmodule AC.PDP do
     end)
   end
 
-  def match_attr(_request_attr = {key, value}, policy_attr) do
-    policy_attr.name == key and policy_attr.value == value
+  def match_attr(_request_attr = {name, value}, policy_attr = %{data_type: dt})
+      when dt in ["string", "number"] do
+    policy_attr.name == name and policy_attr.value == value
+  end
+
+  def match_attr(_request_attr = {name, value}, policy_attr = %{data_type: "range"}) do
+    policy_attr.name == name and match_range(value, policy_attr.value)
+  end
+
+  @doc """
+  Match a numerical value against a range defined as a map.
+  """
+  def match_range(value, range) do
+    case range do
+      %{min: min, max: max} ->
+        value >= min && value <= max
+
+      %{min: min} ->
+        value >= min
+
+      %{max: max} ->
+        value <= max
+
+      _ ->
+        false
+    end
   end
 
   @doc """
@@ -31,6 +55,7 @@ defmodule AC.PDP do
   """
   def match_operations([], _policy_ops), do: false
   def match_operations(_request_ops, []), do: false
+  def match_operations(_request_ops, ["all"]), do: true
 
   def match_operations(request_ops, policy_ops) do
     request_ops

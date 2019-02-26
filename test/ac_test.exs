@@ -55,6 +55,15 @@ defmodule ACTest do
     refute PDP.match_attr({"Type", "Camera"}, policy_attr)
   end
 
+  test "match numerical ranges" do
+    assert PDP.match_range(25, %{min: 18, max: 30})
+    assert PDP.match_range(25, %{min: 18})
+    assert PDP.match_range(25, %{max: 30})
+    refute PDP.match_range(25, %{})
+    refute PDP.match_range(17, %{min: 18, max: 30})
+    refute PDP.match_range(31, %{min: 18, max: 30})
+  end
+
   test "match list of request attributes against list of policy attributes" do
     request_attrs = %{
       "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
