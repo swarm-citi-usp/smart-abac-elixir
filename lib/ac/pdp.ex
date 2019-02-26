@@ -1,9 +1,11 @@
 defmodule AC.PDP do
+  require Logger
+
   def authorize(request, policies) do
     policies
     |> Enum.any?(fn policy ->
       match_operations(request[:operations], policy.operations) &&
-        match_attrs(request[:object_attrs], policy.object_attrs) &&
+        match_attrs(request[:user_attrs], policy.user_attrs) &&
         match_attrs(request[:object_attrs], policy.object_attrs)
     end)
   end
@@ -18,6 +20,7 @@ defmodule AC.PDP do
     |> Enum.all?(fn policy_attr ->
       Enum.any?(request_attrs, &match_attr(&1, policy_attr))
     end)
+    |> log(__ENV__.function, request_attrs, policy_attrs)
   end
 
   def match_attr(_request_attr = {name, value}, policy_attr = %{data_type: dt})
@@ -60,5 +63,10 @@ defmodule AC.PDP do
   def match_operations(request_ops, policy_ops) do
     request_ops
     |> Enum.all?(&(&1 in policy_ops))
+  end
+
+  def log(result, {function_name, _}, request_attrs, policy_attrs) do
+    Logger.debug("Matching #{function_name}(#{inspect(request_attrs)}, #{inspect(policy_attrs)}) was #{result}")
+    result
   end
 end

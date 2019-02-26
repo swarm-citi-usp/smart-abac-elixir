@@ -20,9 +20,10 @@ defmodule ACTest do
 
     policy_person = %Policy{
       id: "...",
-      name: "Person Home Control",
+      name: "Adult Home Control",
       user_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "Person"}
+        %Attr{data_type: "string", name: "Type", value: "Person"},
+        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
       ],
       operations: ["read"],
       object_attrs: [
