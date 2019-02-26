@@ -4,32 +4,31 @@ defmodule ACTest do
   alias AC.{PDP, Attr, Policy}
 
   test "authorize a request" do
-    policies = [
-      %Policy{
-        id: "...",
-        name: "Adult Home Control",
-        user_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "Person"},
-          %Attr{data_type: "string", name: "Role", value: "FamilyMember"},
-          %Attr{data_type: "range", name: "Age", value: %{min: 18}}
-        ],
-        operations: ["all"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
-        ]
-      },
-      %Policy{
-        id: "...",
-        name: "Human Home Control",
-        user_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "Person"}
-        ],
-        operations: ["read"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
-        ]
-      }
-    ]
+    policy_family = %Policy{
+      id: "...",
+      name: "Adult Home Control",
+      user_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "Person"},
+        %Attr{data_type: "string", name: "Role", value: "FamilyMember"},
+        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+      ],
+      operations: ["all"],
+      object_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
+      ]
+    }
+
+    policy_person = %Policy{
+      id: "...",
+      name: "Person Home Control",
+      user_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "Person"}
+      ],
+      operations: ["read"],
+      object_attrs: [
+        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
+      ]
+    }
 
     request = %{
       user_attrs: %{
@@ -44,7 +43,9 @@ defmodule ACTest do
       operations: ["read"]
     }
 
-    refute PDP.authorize(request)
+    refute PDP.authorize(request, [policy_family])
+    assert PDP.authorize(request, [policy_person])
+    assert PDP.authorize(request, [policy_person, policy_family])
   end
 
   test "match single request attribute against policy attribute" do
@@ -80,6 +81,11 @@ defmodule ACTest do
     assert PDP.match_operations(["read"], ["read", "update", "delete"])
     assert PDP.match_operations(["read", "update"], ["read", "update", "delete"])
     assert PDP.match_operations(["read", "update", "delete"], ["read", "update", "delete"])
-    refute PDP.match_operations(["create", "read", "update", "delete"], ["read", "update", "delete"])
+
+    refute PDP.match_operations(["create", "read", "update", "delete"], [
+             "read",
+             "update",
+             "delete"
+           ])
   end
 end

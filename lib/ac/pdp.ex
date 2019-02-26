@@ -1,6 +1,11 @@
 defmodule AC.PDP do
-  def authorize(_request) do
-    false
+  def authorize(request, policies) do
+    policies
+    |> Enum.any?(fn policy ->
+      match_operations(request[:operations], policy.operations) &&
+        match_attrs(request[:object_attrs], policy.object_attrs) &&
+        match_attrs(request[:object_attrs], policy.object_attrs)
+    end)
   end
 
   @doc """
