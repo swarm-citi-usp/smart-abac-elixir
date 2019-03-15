@@ -1,6 +1,8 @@
 defmodule AC.PDP do
   use AC.LogDecorator
 
+  @hierarchy_client Application.get_env(:ac, :hierarchy_client)
+
   def authorize(request, policies) do
     policies
     |> Enum.any?(fn policy ->
@@ -10,6 +12,9 @@ defmodule AC.PDP do
         match_attrs(request[:context_attrs], policy.context_attrs)
     end)
   end
+
+  # def enhance_request_attrs(request) do
+  # end
 
   @doc """
   Tests whether the request attributes are allowed by a policy.
@@ -37,9 +42,32 @@ defmodule AC.PDP do
     |> Enum.all?(fn {value, window} -> in_time_range?(value, window) end)
   end
 
-  def match_attr(data_type, _request_attr = {name, value}, policy_attr)
-      when data_type in ["string", "number"] do
+  def match_attr("number", _request_attr = {name, value}, policy_attr) do
     policy_attr.name == name and policy_attr.value == value
+  end
+
+  def match_attr("string", request_attr, policy_attr) do
+    match_attr("flat_string", request_attr, policy_attr) ||
+      match_attr_containers(request_attr, policy_attr)
+  end
+
+  def match_attr("flat_string", _request_attr = {name, value}, policy_attr) do
+    policy_attr.name == name and policy_attr.value == value
+  end
+
+  @doc false
+  def match_contained_attrs({_, request_attr_value}, %{value: policy_attr_value}) do
+    @hierarchy_client.get_contained_attrs(policy_attr_value)
+    |> Enum.any?(fn policy_attr_container ->
+      policy_attr_container == request_attr_value
+    end)
+  end
+
+  def match_attr_containers({_, request_attr_value}, %{value: policy_attr_value}) do
+    @hierarchy_client.get_attr_containers(request_attr_value)
+    |> Enum.any?(fn request_attr_container ->
+      request_attr_container == policy_attr_value
+    end)
   end
 
   def in_time_range?(_value, "*"), do: true

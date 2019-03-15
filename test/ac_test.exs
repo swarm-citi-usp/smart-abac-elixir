@@ -63,7 +63,101 @@ defmodule ACTest do
            ])
   end
 
-  test "authorize a request" do
+  describe "authorize a request" do
+    setup [:policy_and_request]
+
+    test "authorize a request", %{
+      policy_family: policy_family,
+      policy_person: policy_person,
+      request: request
+    } do
+      refute PDP.authorize(request, [policy_family])
+      assert PDP.authorize(request, [policy_person])
+      assert PDP.authorize(request, [policy_person, policy_family])
+    end
+
+    test "authorize a request considering the context", %{
+      policy_person: policy_person,
+      request: request
+    } do
+      request =
+        Map.put(request, :context_attrs, %{
+          "DateTime" => "0 0 6  1 1 2019"
+        })
+
+      policy_person =
+        Map.put(policy_person, :context_attrs, [
+          %Attr{
+            data_type: "time_window",
+            name: "DateTime",
+            value: "* * 6-22 * * *"
+          }
+        ])
+
+      assert PDP.authorize(request, [policy_person])
+    end
+  end
+
+  describe "hierarchical attributes" do
+    setup [:policy_and_request]
+
+    defmodule AttrHierarchyClientMock do
+      def get_contained_attrs("SecurityAppliance") do
+        ["SecurityCamera", "IntrusionAlarm"]
+      end
+      def get_contained_attrs("AdultFamilyMember") do
+        ["Father", "Mother"]
+      end
+      def get_contained_attrs(_), do: []
+
+      def get_attr_containers("SecurityCamera") do
+        ["SecurityAppliance", "Appliance"]
+      end
+
+      def get_attr_containers("Father") do
+        ["AdultFamilyMember", "FamilyMember", "Persona"]
+      end
+
+      def get_attr_containers(_), do: []
+    end
+
+    test "match contained request attribute against policy attribute" do
+      policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
+      assert PDP.match_attr(policy_attr.data_type, {"Type", "SecurityCamera"}, policy_attr)
+    end
+
+    test "authorize a request using attribute hierarchy / containment" do
+      policy_family = %Policy{
+        id: "...",
+        name: "Adult Home Control",
+        user_attrs: [
+          %Attr{data_type: "string", name: "Role", value: "AdultFamilyMember"},
+          %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+        ],
+        operations: ["read"],
+        object_attrs: [
+          %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
+        ]
+      }
+
+      request = %{
+        user_attrs: %{
+          "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
+          "Role" => "Father",
+          "Age" => 25
+        },
+        object_attrs: %{
+          "Type" => "SecurityCamera",
+          "Location" => "Kitchen"
+        },
+        operations: ["read"]
+      }
+
+      assert PDP.authorize(request, [policy_family])
+    end
+  end
+
+  def policy_and_request(_) do
     policy_family = %Policy{
       id: "...",
       name: "Adult Home Control",
@@ -104,28 +198,6 @@ defmodule ACTest do
       operations: ["read"]
     }
 
-    refute PDP.authorize(request, [policy_family])
-    assert PDP.authorize(request, [policy_person])
-    assert PDP.authorize(request, [policy_person, policy_family])
-
-    request =
-      Map.put(request, :context_attrs, %{
-        "DateTime" => "0 0 6  1 1 2019"
-      })
-
-    policy_person =
-      Map.put(policy_person, :context_attrs, [
-        %Attr{
-          data_type: "time_window",
-          name: "DateTime",
-          value: "* * 6-22 * * *"
-        }
-      ])
-
-    assert PDP.authorize(request, [policy_person])
-  end
-
-  @tag :skip
-  test "administrative policy" do
+    {:ok, policy_family: policy_family, policy_person: policy_person, request: request}
   end
 end

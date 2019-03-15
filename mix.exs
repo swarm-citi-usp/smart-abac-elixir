@@ -21,7 +21,9 @@ defmodule AC.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:decorator, "~> 1.2"}
+      {:decorator, "~> 1.2"},
+      {:poison, "~> 3.1"},
+      {:tesla, "~> 1.2.1"},
     ]
   end
 end
