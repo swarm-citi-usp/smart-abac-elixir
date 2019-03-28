@@ -3,18 +3,20 @@ defmodule AC.PDP do
 
   @hierarchy_client Application.get_env(:ac, :hierarchy_client)
 
+  @doc """
+  Returns whether or not any of the `policies` allow the `request` to be executed.
+  """
   def authorize(request, policies) do
+    request = AC.Request.expand_attrs(request)
+
     policies
     |> Enum.any?(fn policy ->
-      match_operations(request[:operations], policy.operations) &&
-        match_attrs(request[:user_attrs], policy.user_attrs) &&
-        match_attrs(request[:object_attrs], policy.object_attrs) &&
-        match_attrs(request[:context_attrs], policy.context_attrs)
+      match_operations(request.operations, policy.operations) &&
+        match_attrs(request.user_attrs, policy.user_attrs) &&
+        match_attrs(request.object_attrs, policy.object_attrs) &&
+        match_attrs(request.context_attrs, policy.context_attrs)
     end)
   end
-
-  # def enhance_request_attrs(request) do
-  # end
 
   @doc """
   Tests whether the request attributes are allowed by a policy.
@@ -30,46 +32,56 @@ defmodule AC.PDP do
   end
 
   @doc """
-  Match one request attribute against one attribute defined in a policy.
+  Checks whether a number, provided by the request, is within a range, specified in the policy.
   """
-  def match_attr("range", _request_attr = {name, value}, policy_attr) do
-    policy_attr.name == name and match_range(value, policy_attr.value)
+  def match_attr("range", {req_name, req_value}, policy_attr) do
+    policy_attr.name == req_name and match_range(req_value, policy_attr.value)
   end
 
-  def match_attr("time_window", _request_attr = {_name, current_time}, policy_attr) do
+  @doc """
+  Checks whether a date-time, provided by the request, is within a time window, specified in the policy.
+  """
+  def match_attr("time_window", {_req_name, current_time}, policy_attr) do
     [String.split(current_time, ~r/\s+/), String.split(policy_attr.value, ~r/\s+/)]
     |> List.zip()
     |> Enum.all?(fn {value, window} -> in_time_range?(value, window) end)
   end
 
-  def match_attr("number", _request_attr = {name, value}, policy_attr) do
-    policy_attr.name == name and policy_attr.value == value
+  @doc """
+  Compares a number, provided by the request, with another number, specified in the policy.
+  """
+  def match_attr("number", {req_name, req_value}, policy_attr) do
+    policy_attr.name == req_name and policy_attr.value == req_value
   end
 
-  def match_attr("string", request_attr, policy_attr) do
-    match_attr("flat_string", request_attr, policy_attr) ||
-      match_attr_containers(request_attr, policy_attr)
-  end
-
-  def match_attr("flat_string", _request_attr = {name, value}, policy_attr) do
-    policy_attr.name == name and policy_attr.value == value
-  end
-
-  @doc false
-  def match_contained_attrs({_, request_attr_value}, %{value: policy_attr_value}) do
-    @hierarchy_client.get_contained_attrs(policy_attr_value)
-    |> Enum.any?(fn policy_attr_container ->
-      policy_attr_container == request_attr_value
-    end)
-  end
-
-  def match_attr_containers({_, request_attr_value}, %{value: policy_attr_value}) do
-    @hierarchy_client.get_attr_containers(request_attr_value)
+  @doc """
+  Compares *container* attributes, from the request, against string attributes defined in the policy.
+  """
+  def match_attr("string", {"__containers__", request_attr_containers}, policy_attr) do
+    request_attr_containers
     |> Enum.any?(fn request_attr_container ->
-      request_attr_container == policy_attr_value
+      request_attr_container == policy_attr.value
     end)
   end
 
+  @doc """
+  Compares a string, provided by the request, against another string, specified in the policy.
+  """
+  def match_attr("string", {req_name, req_value}, policy_attr) do
+    policy_attr.name == req_name and policy_attr.value == req_value
+  end
+
+  @doc """
+  Matches a date-time value against a time range.
+  The format for specifying time is inspired by the [cron time string format](http://www.nncron.ru/help/EN/working/cron-format.htm).
+
+  # Examples
+
+    iex> in_tine_range?("0 0 5  1 1 2019", "* * 6-22 * * *")
+    false
+    iex> in_tine_range?("0 0 8  1 1 2019", "* * 6-22 * * *")
+    true
+  """
   def in_time_range?(_value, "*"), do: true
 
   def in_time_range?(value, range) do

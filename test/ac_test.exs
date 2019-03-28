@@ -1,7 +1,7 @@
 defmodule ACTest do
   use ExUnit.Case
   doctest AC
-  alias AC.{PDP, Attr, Policy}
+  alias AC.{PDP, Attr, Policy, Request}
 
   test "match single request attribute against policy attribute" do
     policy_attr = %Attr{data_type: "string", name: "Type", value: "Person"}
@@ -105,9 +105,11 @@ defmodule ACTest do
       def get_contained_attrs("SecurityAppliance") do
         ["SecurityCamera", "IntrusionAlarm"]
       end
+
       def get_contained_attrs("AdultFamilyMember") do
         ["Father", "Mother"]
       end
+
       def get_contained_attrs(_), do: []
 
       def get_attr_containers("SecurityCamera") do
@@ -123,7 +125,15 @@ defmodule ACTest do
 
     test "match contained request attribute against policy attribute" do
       policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
-      assert PDP.match_attr(policy_attr.data_type, {"Type", "SecurityCamera"}, policy_attr)
+      assert PDP.match_attr(policy_attr.data_type, {"Type", "SecurityAppliance"}, policy_attr)
+
+      policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
+
+      assert PDP.match_attr(
+               policy_attr.data_type,
+               {"__containers__", ["SecurityAppliance"]},
+               policy_attr
+             )
     end
 
     test "authorize a request using attribute hierarchy / containment" do
@@ -140,7 +150,7 @@ defmodule ACTest do
         ]
       }
 
-      request = %{
+      request = %Request{
         user_attrs: %{
           "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
           "Role" => "Father",
@@ -154,6 +164,19 @@ defmodule ACTest do
       }
 
       assert PDP.authorize(request, [policy_family])
+    end
+
+    test "expand user attributes" do
+      user_attrs = %{
+        "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
+        "Role" => "Father",
+        "Age" => 25
+      }
+
+      container_user_attrs = AttrHierarchyClientMock.get_attr_containers("Father")
+      user_attrs = Map.put(user_attrs, "__containers__", container_user_attrs)
+
+      assert user_attrs == AC.Request.add_attr_containers(user_attrs)
     end
   end
 
@@ -185,7 +208,7 @@ defmodule ACTest do
       ]
     }
 
-    request = %{
+    request = %Request{
       user_attrs: %{
         "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
         "Type" => "Person",
