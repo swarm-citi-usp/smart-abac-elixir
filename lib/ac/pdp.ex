@@ -1,8 +1,6 @@
 defmodule AC.PDP do
   use AC.LogDecorator
 
-  @hierarchy_client Application.get_env(:ac, :hierarchy_client)
-
   @doc """
   Returns whether or not any of the `policies` allow the `request` to be executed.
   """
@@ -20,8 +18,6 @@ defmodule AC.PDP do
 
   @doc """
   Tests whether the request attributes are allowed by a policy.
-
-  Returns true if the set `request_ops` is a subset of `policy_ops`.
   """
   # @decorate log(:debug)
   def match_attrs(request_attrs, policy_attrs) do
@@ -73,7 +69,8 @@ defmodule AC.PDP do
 
   @doc """
   Matches a date-time value against a time range.
-  The format for specifying time is inspired by the [cron time string format](http://www.nncron.ru/help/EN/working/cron-format.htm).
+  The format for specifying time is inspired by the
+  [cron time string format](http://www.nncron.ru/help/EN/working/cron-format.htm).
 
   # Examples
 
@@ -124,7 +121,7 @@ defmodule AC.PDP do
   @doc """
   Tests whether the request operations are allowed by a policy.
 
-  Returns true if the set `request_ops` is a subset of `policy_ops`.
+  Returns true when the set `request_ops` is a subset of `policy_ops`.
   """
   # @decorate log(:debug)
   def match_operations([], _policy_ops), do: false

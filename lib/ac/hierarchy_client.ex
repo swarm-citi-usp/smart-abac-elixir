@@ -13,6 +13,7 @@ defmodule AC.HierarchyClient do
     else
       error ->
         Logger.warn("Failed to get attribute containers: " <> inspect(error))
+        []
     end
   end
 end

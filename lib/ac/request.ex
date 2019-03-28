@@ -24,6 +24,7 @@ defmodule AC.Request do
       attrs
       |> Enum.flat_map(fn {_attr_name, attr_value} ->
         @hierarchy_client.get_attr_containers(attr_value)
+        |> Enum.map(&String.replace(&1, "http://br.citi.usp/swarm#", "s:"))
       end)
 
     Map.put(attrs, "__containers__", containers)
