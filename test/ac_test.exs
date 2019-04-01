@@ -110,6 +110,10 @@ defmodule ACTest do
         ["Father", "Mother"]
       end
 
+      def get_contained_attrs("Indoor") do
+        ["Laboratory", "MeetingRoom", "Hall"]
+      end
+
       def get_contained_attrs(_), do: []
 
       def get_attr_containers("SecurityCamera") do
@@ -177,6 +181,58 @@ defmodule ACTest do
       user_attrs = Map.put(user_attrs, "__containers__", container_user_attrs)
 
       assert user_attrs == AC.Request.add_attr_containers(user_attrs)
+    end
+
+    test "attribute replace" do
+      attrs = [
+        %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
+        %Attr{data_type: "string", name: "Location", value: "Indoor"},
+        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+      ]
+
+      replaced_attrs =
+        AC.replace_attr(
+          attrs,
+          %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
+          %Attr{data_type: "string", name: "Type", value: "FamilyMember"}
+        )
+
+      assert length(replaced_attrs) == 3
+      assert %Attr{data_type: "string", name: "Type", value: "FamilyMember"} in replaced_attrs
+
+      refute %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"} in replaced_attrs
+    end
+
+    test "generate expanded flat policies based on attribute hierarchy / containment" do
+      policy = %Policy{
+        id: "...",
+        name: "Adult Home Control",
+        user_attrs: [
+          %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
+          %Attr{data_type: "string", name: "Location", value: "Indoor"},
+          %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+        ],
+        operations: ["read"],
+        object_attrs: [
+          %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"},
+          %Attr{data_type: "string", name: "Location", value: "Indoor"}
+        ]
+      }
+
+      AC.Policy.generate_expanded_policies(policy) |> IO.inspect()
+      length(AC.Policy.generate_expanded_policies(policy)) |> IO.inspect()
+
+      # expanded =
+      #   %{
+      #     uas: AC.expand_attributes_to_containers(policy.user_attrs),
+      #     oas: AC.expand_attributes_to_containers(policy.object_attrs),
+      #     cas: AC.expand_attributes_to_containers(policy.context_attrs)
+      #   }
+      #   |> IO.inspect()
+
+      # expanded.uas
+      # |> Enum.reduce(fn {x, acc} ->
+      # end)
     end
   end
 

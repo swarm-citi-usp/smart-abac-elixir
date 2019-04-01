@@ -59,4 +59,30 @@ defmodule AC do
     # iex(26)> AC.PDP.authorize(%AC.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 2.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, AC._policies())
     # false
   end
+
+  @hierarchy_client Application.get_env(:ac, :hierarchy_client)
+
+  def expand_attributes_to_containers(attrs) do
+    attrs
+    |> Enum.filter(fn attr -> attr.data_type == "string" end)
+    |> Enum.map(fn attr ->
+      attr.value
+      |> expand_attr_to_containers()
+      |> Enum.concat([attr])
+    end)
+  end
+
+  def expand_attr_to_containers(attr) do
+    attr.value
+    |> @hierarchy_client.get_contained_attrs()
+    |> Enum.map(fn container_attr_value ->
+      %AC.Attr{data_type: attr.data_type, name: attr.name, value: container_attr_value}
+    end)
+  end
+
+  def replace_attr(attrs, orig_attr, other_attr) do
+    attrs
+    |> Enum.reject(fn attr -> attr == orig_attr end)
+    |> Enum.concat([other_attr])
+  end
 end

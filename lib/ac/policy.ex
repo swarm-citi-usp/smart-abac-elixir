@@ -117,4 +117,26 @@ defmodule AC.Policy do
           object_attrs: [Attr.t()],
           context_attrs: [Attr.t()]
         }
+
+  def generate_expanded_policies(policy) do
+    [
+      policy,
+      AC.Policy.generate_policy_attributes(policy, :user_attrs),
+      AC.Policy.generate_policy_attributes(policy, :object_attrs),
+      AC.Policy.generate_policy_attributes(policy, :context_attrs)
+    ]
+    |> List.flatten()
+  end
+
+  def generate_policy_attributes(policy, key) do
+    attrs = Map.fetch!(policy, key)
+
+    Enum.flat_map(attrs, fn ua ->
+      containers = AC.expand_attr_to_containers(ua)
+
+      Enum.map(containers, fn container ->
+        Map.put(policy, key, AC.replace_attr(attrs, ua, container))
+      end)
+    end)
+  end
 end
