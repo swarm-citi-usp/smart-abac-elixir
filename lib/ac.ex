@@ -62,17 +62,7 @@ defmodule AC do
 
   @hierarchy_client Application.get_env(:ac, :hierarchy_client)
 
-  def expand_attributes_to_containers(attrs) do
-    attrs
-    |> Enum.filter(fn attr -> attr.data_type == "string" end)
-    |> Enum.map(fn attr ->
-      attr.value
-      |> expand_attr_to_containers()
-      |> Enum.concat([attr])
-    end)
-  end
-
-  def expand_attr_to_containers(attr) do
+  def expand_to_contained_attrs(attr) do
     attr.value
     |> @hierarchy_client.get_contained_attrs()
     |> Enum.map(fn container_attr_value ->

@@ -132,7 +132,7 @@ defmodule AC.Policy do
     attrs = Map.fetch!(policy, key)
 
     Enum.flat_map(attrs, fn ua ->
-      containers = AC.expand_attr_to_containers(ua)
+      containers = AC.expand_to_contained_attrs(ua)
 
       Enum.map(containers, fn container ->
         Map.put(policy, key, AC.replace_attr(attrs, ua, container))

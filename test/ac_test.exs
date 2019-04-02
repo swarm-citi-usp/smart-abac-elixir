@@ -219,20 +219,14 @@ defmodule ACTest do
         ]
       }
 
-      AC.Policy.generate_expanded_policies(policy) |> IO.inspect()
-      length(AC.Policy.generate_expanded_policies(policy)) |> IO.inspect()
+      generated_policies = AC.Policy.generate_expanded_policies(policy)
 
-      # expanded =
-      #   %{
-      #     uas: AC.expand_attributes_to_containers(policy.user_attrs),
-      #     oas: AC.expand_attributes_to_containers(policy.object_attrs),
-      #     cas: AC.expand_attributes_to_containers(policy.context_attrs)
-      #   }
-      #   |> IO.inspect()
+      attribute_combinations =
+        ["AdultFamilyMember", "Indoor", "SecurityAppliance", "Indoor"]
+        |> Enum.flat_map(fn attr -> AttrHierarchyClientMock.get_contained_attrs(attr) end)
 
-      # expanded.uas
-      # |> Enum.reduce(fn {x, acc} ->
-      # end)
+      # the length should be the number of combinations plus one original policy
+      assert length(generated_policies) == length(attribute_combinations) + 1
     end
   end
 
