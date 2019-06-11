@@ -5,8 +5,6 @@ defmodule AC.PDP do
   Returns whether or not any of the `policies` allow the `request` to be executed.
   """
   def authorize(request, policies) do
-    request = AC.Request.expand_attrs(request)
-
     policies
     |> Enum.any?(fn policy ->
       match_operations(request.operations, policy.operations) &&

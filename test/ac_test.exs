@@ -167,6 +167,7 @@ defmodule ACTest do
         operations: ["read"]
       }
 
+      request = AC.Request.expand_attrs(request)
       assert PDP.authorize(request, [policy_family])
     end
 
@@ -227,6 +228,22 @@ defmodule ACTest do
 
       # the length should be the number of combinations plus one original policy
       assert length(generated_policies) == length(attribute_combinations) + 1
+
+      _request = %Request{
+        user_attrs: %{
+          "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
+          "Type" => "Father",
+          "Location" => "Laboratory",
+          "Age" => 25
+        },
+        object_attrs: %{
+          "Type" => "SecurityCamera",
+          "Location" => "Hall"
+        },
+        operations: ["read"]
+      }
+
+      # assert PDP.authorize(request, generated_policies)
     end
   end
 

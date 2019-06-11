@@ -1,0 +1,37 @@
+[
+    {
+      "user_attrs": [
+        ["string", "Role", "AdultFamilyMember"]
+      ],
+      "operations": ["read", "update"],
+      "object_attrs": [
+        ["string", "Type", "SecurityAppliance"]
+      ]
+    },
+    {
+      "user_attrs": [
+        ["range", "Reputation", {"min": 4}]
+      ],
+      "operations": ["contract"],
+      "object_attrs": [
+        ["string", "Type", "SecurityCamera"],
+        ["string", "Location", "Outdoor"]
+      ],
+      "context_attrs": [
+        ["time_interval", "DateTime", "* * 8-18 * * *"]
+      ]
+    },
+    {
+      "user_attrs": [
+        ["string", "Id", "8a5...934"]
+      ],
+      "operations": ["read"],
+      "object_attrs": [
+        ["string", "Id", "e35...85a"],
+        ["string", "Type", "SecurityCamera"]
+      ],
+      "context_attrs": [
+        ["time_interval", "DateTime", "10 20-25 12 6 6 2019"]
+      ]
+    }
+  ]
