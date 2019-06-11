@@ -4,6 +4,6 @@ use Mix.Config
 
 
 
-config :ac, hierarchy_client: AC.HierarchyClient
+config :abac_them, hierarchy_client: ABACthem.HierarchyClient
 
 import_config "#{Mix.env()}.exs"

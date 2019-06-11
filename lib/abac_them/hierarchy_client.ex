@@ -1,4 +1,4 @@
-defmodule AC.HierarchyClient do
+defmodule ABACthem.HierarchyClient do
   require Logger
 
   def get_attr_containers(value) do

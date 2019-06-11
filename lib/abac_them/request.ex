@@ -1,4 +1,4 @@
-defmodule AC.Request do
+defmodule ABACthem.Request do
   defstruct user_attrs: %{}, object_attrs: %{}, context_attrs: %{}, operations: []
 
   @type t :: %__MODULE__{
@@ -8,7 +8,7 @@ defmodule AC.Request do
           context_attrs: [Attr.t()]
         }
 
-  @hierarchy_client Application.get_env(:ac, :hierarchy_client)
+  @hierarchy_client Application.get_env(:abac_them, :hierarchy_client)
 
   def expand_attrs(request) do
     %__MODULE__{

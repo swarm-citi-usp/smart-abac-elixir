@@ -1,6 +1,6 @@
 defmodule EvaluationTest do
   use ExUnit.Case
-  alias AC.{Attr, Policy}
+  alias ABACthem.{Attr, Policy}
 
   test "representing PM" do
     _policies = [
@@ -45,7 +45,7 @@ defmodule EvaluationTest do
     # Poison.encode!(policies, pretty: true) |> IO.puts()
   end
 
-  describe "representing HGABAC" do
+  describe "representing HGABABACthem" do
     test "case 1" do
       [
         %Policy{
@@ -198,7 +198,7 @@ defmodule EvaluationTest do
   end
 
   @tag :skip
-  test "HGABAC case 1 >> modified with 'variable'" do
+  test "HGABABACthem case 1 >> modified with 'variable'" do
     _policies = [
       %Policy{
         user_attrs: [

@@ -1,3 +1,3 @@
 use Mix.Config
 
-config :ac, hierarchy_client: ACTest.AttrHierarchyClientMock
+config :abac_them, hierarchy_client: ABACthemTest.AttrHierarchyClientMock

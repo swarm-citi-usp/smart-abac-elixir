@@ -1,4 +1,4 @@
-defmodule AC.Attr do
+defmodule ABACthem.Attr do
   @moduledoc """
   Defines general attributes. Can be user, object, or context attributes.
 

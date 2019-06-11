@@ -1,5 +1,5 @@
-defmodule AC.PDP do
-  use AC.LogDecorator
+defmodule ABACthem.PDP do
+  use ABACthem.LogDecorator
 
   @doc """
   Returns whether or not any of the `policies` allow the `request` to be executed.

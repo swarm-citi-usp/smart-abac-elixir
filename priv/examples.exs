@@ -1,4 +1,4 @@
-[
+policies = [
   %ABACthem.Policy{
     id: "...",
     name: "Adult home control",
@@ -38,17 +38,19 @@
   }
 ]
 
-# iex(20)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:Door"}}, ABACthem._policies())
+# NOTE: these examples only work if the Hierachy Service is running on backgrond.
+
+# iex(20)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:Door"}}, policies)
 # true
-# iex(21)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, ABACthem._policies())
+# iex(21)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, policies)
 # true
-# iex(22)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:FamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, ABACthem._policies())
+# iex(22)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:FamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, policies)
 # false
-# iex(23)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Children"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, ABACthem._policies())
+# iex(23)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Children"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, policies)
 # false
-# iex(24)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Children"}, operations: ["read"], object_attrs: %{"Type" => "s:TV"}}, ABACthem._policies())
+# iex(24)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Children"}, operations: ["read"], object_attrs: %{"Type" => "s:TV"}}, policies)
 # true
-# iex(25)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 4.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, ABACthem._policies())
+# iex(25)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 4.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, policies)
 # true
-# iex(26)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 2.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, ABACthem._policies())
+# iex(26)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 2.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, policies)
 # false

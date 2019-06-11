@@ -1,7 +1,7 @@
-defmodule ACTest do
+defmodule ABACthemTest do
   use ExUnit.Case
-  doctest AC
-  alias AC.{PDP, Attr, Policy, Request}
+  doctest ABACthem
+  alias ABACthem.{PDP, Attr, Policy, Request}
 
   test "match single request attribute against policy attribute" do
     policy_attr = %Attr{data_type: "string", name: "Type", value: "Person"}
@@ -167,7 +167,7 @@ defmodule ACTest do
         operations: ["read"]
       }
 
-      request = AC.Request.expand_attrs(request)
+      request = ABACthem.Request.expand_attrs(request)
       assert PDP.authorize(request, [policy_family])
     end
 
@@ -181,7 +181,7 @@ defmodule ACTest do
       container_user_attrs = AttrHierarchyClientMock.get_attr_containers("Father")
       user_attrs = Map.put(user_attrs, "__containers__", container_user_attrs)
 
-      assert user_attrs == AC.Request.add_attr_containers(user_attrs)
+      assert user_attrs == ABACthem.Request.add_attr_containers(user_attrs)
     end
 
     test "attribute replace" do
@@ -192,7 +192,7 @@ defmodule ACTest do
       ]
 
       replaced_attrs =
-        AC.replace_attr(
+        ABACthem.replace_attr(
           attrs,
           %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
           %Attr{data_type: "string", name: "Type", value: "FamilyMember"}
@@ -220,7 +220,7 @@ defmodule ACTest do
         ]
       }
 
-      generated_policies = AC.Policy.generate_expanded_policies(policy)
+      generated_policies = ABACthem.Policy.generate_expanded_policies(policy)
 
       attribute_combinations =
         ["AdultFamilyMember", "Indoor", "SecurityAppliance", "Indoor"]
