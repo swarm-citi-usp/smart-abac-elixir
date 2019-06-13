@@ -54,3 +54,6 @@ policies = [
 # true
 # iex(26)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 2.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, policies)
 # false
+
+
+ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:HomeAppliance"}}, policies)
