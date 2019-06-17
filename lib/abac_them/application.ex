@@ -5,6 +5,7 @@ defmodule ABACthem.Application do
     children = [
       {ABACthem.Store, []}
     ]
+
     Supervisor.start_link(children, strategy: :one_for_one)
   end
 end

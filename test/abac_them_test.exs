@@ -117,6 +117,7 @@ defmodule ABACthemTest do
       policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityCamera"}
 
       refute PDP.match_attr(policy_attr.data_type, {"Type", "SecurityAppliance"}, policy_attr)
+
       assert PDP.match_attr(
                policy_attr.data_type,
                {"Type", ["SecurityCamera", "SecurityAppliance"]},

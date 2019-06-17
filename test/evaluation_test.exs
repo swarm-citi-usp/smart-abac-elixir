@@ -2,6 +2,92 @@ defmodule EvaluationTest do
   use ExUnit.Case
   alias ABACthem.{Attr, Policy}
 
+  @moduledoc """
+  This module is mainly used for experimenting with policies to put in the
+  ABAC-them article that I've written.
+  """
+
+  defmodule AttrInspect do
+    def simple_encode([]) do
+      "[]"
+    end
+
+    def simple_encode(attrs) when is_list(attrs) do
+      """
+      [
+            #{Enum.map(attrs, &simple_encode/1) |> Enum.join(",\n      ")}
+          ]\
+      """
+    end
+
+    def simple_encode(%{data_type: dt, name: name, value: value}) do
+      "[#{dt}, #{name}, #{simple_encode(value)}]"
+    end
+
+    def simple_encode(value = %{}) do
+      Poison.encode!(value)
+    end
+
+    def simple_encode(value) do
+      value
+    end
+  end
+
+  defmodule PolicyInspect do
+    def inspect(policies, :json) do
+      policies
+      |> convert_attrs_to_list()
+      |> Poison.encode!(pretty: true)
+      |> IO.puts()
+    end
+
+    def inspect(policies) do
+      policies
+      |> simple_encode()
+      |> IO.puts()
+    end
+
+    def convert_attrs_to_list(policies) when is_list(policies) do
+      Enum.map(policies, &convert_attrs_to_list/1)
+    end
+
+    def convert_attrs_to_list(policy) do
+      %{
+        policy
+        | user_attrs: Enum.map(policy.user_attrs, &attr_to_list/1),
+          object_attrs: Enum.map(policy.object_attrs, &attr_to_list/1),
+          context_attrs: Enum.map(policy.context_attrs, &attr_to_list/1)
+      }
+    end
+
+    def attr_to_list(attr) do
+      [attr.data_type, attr.name, attr.value]
+    end
+
+    def simple_encode([]) do
+      "[]"
+    end
+
+    def simple_encode(policies) when is_list(policies) do
+      """
+      [
+        #{Enum.map(policies, &simple_encode/1) |> Enum.join(",\n  ")}
+      ]
+      """
+    end
+
+    def simple_encode(policy) do
+      """
+      {
+          ua: #{AttrInspect.simple_encode(policy.user_attrs)},
+          op: [#{policy.operations |> Enum.join(",")}],
+          oa: #{AttrInspect.simple_encode(policy.object_attrs)},
+          ca: #{AttrInspect.simple_encode(policy.context_attrs)}
+        }\
+      """
+    end
+  end
+
   test "representing PM" do
     _policies = [
       %Policy{
@@ -42,7 +128,7 @@ defmodule EvaluationTest do
       }
     ]
 
-    # Poison.encode!(policies, pretty: true) |> IO.puts()
+    # |> PolicyInspect.inspect()
   end
 
   describe "representing HGABABACthem" do
@@ -69,12 +155,8 @@ defmodule EvaluationTest do
           ]
         }
       ]
-      # |> Policy.simple_encode() |> IO.puts
 
-      # |> Policy.convert_attrs_to_list()
-      # |> Poison.encode!(pretty: true)
-      # |> IO.puts()
-
+      # |> PolicyInspect.inspect()
     end
 
     test "case 2" do
@@ -100,9 +182,7 @@ defmodule EvaluationTest do
         }
       ]
 
-      # |> Policy.convert_attrs_to_list()
-      # |> Poison.encode!(pretty: true)
-      # |> IO.puts()
+      # |> PolicyInspect.inspect()
     end
 
     test "case 3" do
@@ -146,10 +226,6 @@ defmodule EvaluationTest do
           ]
         }
       ]
-
-      # |> Policy.convert_attrs_to_list()
-      # |> Poison.encode!(pretty: true)
-      # |> IO.puts()
     end
 
     test "case 4" do
@@ -168,10 +244,6 @@ defmodule EvaluationTest do
           ]
         }
       ]
-
-      # |> Policy.convert_attrs_to_list()
-      # |> Poison.encode!(pretty: true)
-      # |> IO.puts()
     end
 
     test "case 5" do
@@ -190,10 +262,6 @@ defmodule EvaluationTest do
           ]
         }
       ]
-
-      # |> Policy.convert_attrs_to_list()
-      # |> Poison.encode!(pretty: true)
-      # |> IO.puts()
     end
   end
 
@@ -221,8 +289,6 @@ defmodule EvaluationTest do
         ]
       }
     ]
-
-    # Poison.encode!(policies, pretty: true) |> IO.puts()
   end
 
   describe "Swarm scenarios" do
@@ -267,7 +333,7 @@ defmodule EvaluationTest do
           ]
         }
       ]
-      # |> Policy.simple_encode() |> IO.puts
+      |> PolicyInspect.inspect()
 
       _admin_policies = [
         # based on general attributes
@@ -318,51 +384,6 @@ defmodule EvaluationTest do
           ]
         }
       ]
-    end
-
-    test "policy with tuple attributes" do
-      [
-        %Policy{
-          id: "0",
-          user_attrs: [
-            ["string", "Role", "AdultFamilyMember"]
-          ],
-          operations: ["read", "update"],
-          object_attrs: [
-            ["string", "Type", "SecurityAppliance"]
-          ]
-        },
-        %Policy{
-          id: "1",
-          user_attrs: [
-            ["range", "Reputation", %{min: 4}]
-          ],
-          operations: ["buy"],
-          object_attrs: [
-            ["string", "Type", "SecurityCamera"],
-            ["string", "Location", "Outdoor"]
-          ],
-          context_attrs: [
-            ["time_interval", "DateTime", "* * 8-18 * * *"]
-          ]
-        },
-        %Policy{
-          id: "2",
-          user_attrs: [
-            ["string", "Id", "8a5...934"]
-          ],
-          operations: ["read"],
-          object_attrs: [
-            ["string", "Id", "e35...85a"],
-            ["string", "Type", "SecurityCamera"]
-          ],
-          context_attrs: [
-            ["time_interval", "DateTime", "10 20-25 12 6 6 2019"]
-          ]
-        }
-      ]
-      # |> Poison.encode!()
-      # |> IO.puts()
     end
   end
 end

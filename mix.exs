@@ -24,7 +24,7 @@ defmodule ABACthem.MixProject do
     [
       {:decorator, "~> 1.2"},
       {:poison, "~> 3.1"},
-      {:tesla, "~> 1.2.1"},
+      {:tesla, "~> 1.2.1"}
     ]
   end
 end

@@ -35,28 +35,4 @@ defmodule ABACthem.Attr do
           name: String.t(),
           value: depends_on_data_type
         }
-
-  def simple_encode([]) do
-    "[]"
-  end
-
-  def simple_encode(attrs) when is_list(attrs) do
-    """
-    [
-          #{Enum.map(attrs, &simple_encode/1) |> Enum.join(",\n      ")}
-        ]\
-    """
-  end
-
-  def simple_encode(%{data_type: dt, name: name, value: value}) do
-    "[#{dt}, #{name}, #{simple_encode(value)}]"
-  end
-
-  def simple_encode(value = %{}) do
-    Poison.encode!(value)
-  end
-
-  def simple_encode(value) do
-    value
-  end
 end
