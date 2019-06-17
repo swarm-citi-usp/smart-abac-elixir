@@ -102,45 +102,29 @@ defmodule ABACthemTest do
     setup [:policy_and_request]
 
     defmodule AttrHierarchyClientMock do
-      def get_contained_attrs("SecurityAppliance") do
-        ["SecurityCamera", "IntrusionAlarm"]
+      def expand_attr("Type", "SecurityCamera") do
+        ["SecurityCamera", "SecurityAppliance", "Appliance"]
       end
 
-      def get_contained_attrs("AdultFamilyMember") do
-        ["Father", "Mother"]
+      def expand_attr("Role", "Father") do
+        ["Father", "AdultFamilyMember", "FamilyMember", "Persona"]
       end
 
-      def get_contained_attrs("Indoor") do
-        ["Laboratory", "MeetingRoom", "Hall"]
-      end
-
-      def get_contained_attrs(_), do: []
-
-      def get_attr_containers("SecurityCamera") do
-        ["SecurityAppliance", "Appliance"]
-      end
-
-      def get_attr_containers("Father") do
-        ["AdultFamilyMember", "FamilyMember", "Persona"]
-      end
-
-      def get_attr_containers(_), do: []
+      def expand_attr(_, value), do: [value]
     end
 
-    test "match contained request attribute against policy attribute" do
-      policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
-      assert PDP.match_attr(policy_attr.data_type, {"Type", "SecurityAppliance"}, policy_attr)
+    test "match expanded request attribute against policy attribute" do
+      policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityCamera"}
 
-      policy_attr = %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
-
+      refute PDP.match_attr(policy_attr.data_type, {"Type", "SecurityAppliance"}, policy_attr)
       assert PDP.match_attr(
                policy_attr.data_type,
-               {"__containers__", ["SecurityAppliance"]},
+               {"Type", ["SecurityCamera", "SecurityAppliance"]},
                policy_attr
              )
     end
 
-    test "authorize a request using attribute hierarchy / containment" do
+    test "authorize a request using attribute expansion" do
       policy_family = %Policy{
         id: "...",
         name: "Adult Home Control",
@@ -178,72 +162,13 @@ defmodule ABACthemTest do
         "Age" => 25
       }
 
-      container_user_attrs = AttrHierarchyClientMock.get_attr_containers("Father")
-      user_attrs = Map.put(user_attrs, "__containers__", container_user_attrs)
-
-      assert user_attrs == ABACthem.Request.add_attr_containers(user_attrs)
-    end
-
-    test "attribute replace" do
-      attrs = [
-        %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
-        %Attr{data_type: "string", name: "Location", value: "Indoor"},
-        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
-      ]
-
-      replaced_attrs =
-        ABACthem.replace_attr(
-          attrs,
-          %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
-          %Attr{data_type: "string", name: "Type", value: "FamilyMember"}
-        )
-
-      assert length(replaced_attrs) == 3
-      assert %Attr{data_type: "string", name: "Type", value: "FamilyMember"} in replaced_attrs
-
-      refute %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"} in replaced_attrs
-    end
-
-    test "generate expanded flat policies based on attribute hierarchy / containment" do
-      policy = %Policy{
-        id: "...",
-        name: "Adult Home Control",
-        user_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "AdultFamilyMember"},
-          %Attr{data_type: "string", name: "Location", value: "Indoor"},
-          %Attr{data_type: "range", name: "Age", value: %{min: 18}}
-        ],
-        operations: ["read"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"},
-          %Attr{data_type: "string", name: "Location", value: "Indoor"}
-        ]
+      expanded_user_attrs = %{
+        user_attrs
+        | "Role" => AttrHierarchyClientMock.expand_attr("Role", "Father")
       }
 
-      generated_policies = ABACthem.Policy.generate_expanded_policies(policy)
-
-      attribute_combinations =
-        ["AdultFamilyMember", "Indoor", "SecurityAppliance", "Indoor"]
-        |> Enum.flat_map(fn attr -> AttrHierarchyClientMock.get_contained_attrs(attr) end)
-
-      # the length should be the number of combinations plus one original policy
-      assert length(generated_policies) == length(attribute_combinations) + 1
-
-      _request = %Request{
-        user_attrs: %{
-          "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
-          "Type" => "Father",
-          "Location" => "Laboratory",
-          "Age" => 25
-        },
-        object_attrs: %{
-          "Type" => "SecurityCamera",
-          "Location" => "Hall"
-        },
-        operations: ["read"]
-      }
-
-      # assert PDP.authorize(request, generated_policies)
+      assert expanded_user_attrs["Role"] ==
+               ABACthem.Request.add_expanded_attrs(user_attrs)["Role"]
     end
   end
 

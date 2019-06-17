@@ -3,6 +3,12 @@ defmodule ABACthem do
   Documentation for ABACthem.
   """
 
+  def authorize(request) do
+    # expand attributes
+    # get policies
+    # evaluate
+  end
+
   @hierarchy_client Application.get_env(:abac_them, :hierarchy_client)
 
   def expand_to_contained_attrs(attr) do

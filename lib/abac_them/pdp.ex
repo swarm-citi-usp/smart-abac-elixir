@@ -51,10 +51,10 @@ defmodule ABACthem.PDP do
   @doc """
   Compares *container* attributes, from the request, against string attributes defined in the policy.
   """
-  def match_attr("string", {"__containers__", request_attr_containers}, policy_attr) do
-    request_attr_containers
-    |> Enum.any?(fn request_attr_container ->
-      request_attr_container == policy_attr.value
+  def match_attr("string", {req_name, req_values}, policy_attr) when is_list(req_values) do
+    req_values
+    |> Enum.any?(fn req_value ->
+      match_attr("string", {req_name, req_value}, policy_attr)
     end)
   end
 
