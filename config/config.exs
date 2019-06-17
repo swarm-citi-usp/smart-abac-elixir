@@ -3,5 +3,6 @@
 use Mix.Config
 
 config :abac_them, hierarchy_client: ABACthem.HierarchyClient
+config :abac_them, hierarchy_service_url: "http://localhost:4010/expansions"
 
 import_config "#{Mix.env()}.exs"

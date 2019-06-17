@@ -31,6 +31,8 @@ defmodule ABACthem.Request do
 
   def expand_attr(name, value) do
     @hierarchy_client.expand_attr(name, value)
-    |> Enum.map(&String.replace(&1, "http://br.citi.usp/swarm#", "s:"))
+    |> Enum.map(fn attr_name ->
+      String.replace(attr_name, "http://br.citi.usp/swarm#", "s:")
+    end)
   end
 end

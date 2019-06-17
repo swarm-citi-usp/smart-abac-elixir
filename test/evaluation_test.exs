@@ -333,7 +333,7 @@ defmodule EvaluationTest do
           ]
         }
       ]
-      |> PolicyInspect.inspect()
+      # |> PolicyInspect.inspect()
 
       _admin_policies = [
         # based on general attributes
