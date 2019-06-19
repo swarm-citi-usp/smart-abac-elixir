@@ -35,4 +35,18 @@ defmodule ABACthem.Request do
       String.replace(attr_name, "http://br.citi.usp/swarm#", "s:")
     end)
   end
+
+  def add_date_time_attr(request) do
+    request_date_time = DateTime.utc_now() |> format_date_time()
+
+    new_context =
+      (request.context_attrs || %{})
+      |> Map.put("DateTime", request_date_time)
+
+    %{request | context_attrs: new_context}
+  end
+
+  def format_date_time(%{second: sec, minute: min, hour: hour, day: day, month: month, year: year}) do
+    "#{sec} #{min} #{hour} #{day} #{month} #{year}"
+  end
 end

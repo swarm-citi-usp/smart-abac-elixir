@@ -4,10 +4,11 @@ defmodule ABACthem do
   """
 
   def authorize(request) do
-    request = ABACthem.Request.expand_attrs(request)
-    # TODO: implement this
-    # request = ABACthem.Request.add_date_time(request)
     policies = ABACthem.Store.all()
-    ABACthem.PDP.authorize(request, policies)
+
+    request
+      |> ABACthem.Request.expand_attrs()
+      |> ABACthem.Request.add_date_time_attr()
+      |> ABACthem.PDP.authorize(policies)
   end
 end

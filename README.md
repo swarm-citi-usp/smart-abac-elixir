@@ -75,9 +75,9 @@ ABACthem.authorize(request) # true
     %Attr{data_type: "string", name: "s:Type", value: "s:SecurityCamera"},
     %Attr{data_type: "string", name: "s:Location", value: "s:Outdoor"}
   ],
-#  context_attrs: [
-#    %Attr{data_type: "time_interval", name: "s:DateTime", value: "* * 8-18 * * *"}
-#  ]
+  context_attrs: [
+    %Attr{data_type: "time_interval", name: "s:DateTime", value: "* * 8-18 * * *"}
+  ]
 } |> Store.update()
 
 request = %Request{
@@ -107,9 +107,10 @@ ABACthem.authorize(request) # true
     %Attr{data_type: "string", name: "s:Id", value: "s:e35...85a"},
     %Attr{data_type: "string", name: "s:Type", value: "s:SecurityCamera"}
   ],
-#  context_attrs: [
-#    %Attr{data_type: "time_interval", name: "s:DateTime", value: "10 20-25 12 6 6 2019"}
-#  ]
+  context_attrs: [
+    # ADJUST the date and time below to test this!
+    %Attr{data_type: "time_interval", name: "s:DateTime", value: "0-60 1-5 14 19 6 2019"}
+  ]
 } |> Store.update()
 
 request = %Request{

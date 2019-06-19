@@ -11,7 +11,7 @@ defmodule ABACthemTest do
   end
 
   test "match context against policy context" do
-    day_time_attr = %Attr{data_type: "time_window", name: "DateTime", value: "* * 6-22 * * *"}
+    day_time_attr = %Attr{data_type: "time_interval", name: "DateTime", value: "* * 6-22 * * *"}
     refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 5  1 1 2019"}, day_time_attr)
     assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 6  1 1 2019"}, day_time_attr)
     assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 7  1 1 2019"}, day_time_attr)
@@ -88,7 +88,7 @@ defmodule ABACthemTest do
       policy_person =
         Map.put(policy_person, :context_attrs, [
           %Attr{
-            data_type: "time_window",
+            data_type: "time_interval",
             name: "DateTime",
             value: "* * 6-22 * * *"
           }

@@ -35,7 +35,7 @@ defmodule ABACthem.PDP do
   @doc """
   Checks whether a date-time, provided by the request, is within a time window, specified in the policy.
   """
-  def match_attr("time_window", {_req_name, current_time}, policy_attr) do
+  def match_attr("time_interval", {_req_name, current_time}, policy_attr) do
     [String.split(current_time, ~r/\s+/), String.split(policy_attr.value, ~r/\s+/)]
     |> List.zip()
     |> Enum.all?(fn {value, window} -> in_time_range?(value, window) end)
