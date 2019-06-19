@@ -2,7 +2,7 @@ defmodule ABACthem.HierarchyClient do
   require Logger
 
   def expand_attr(name, value) do
-    expansions_url = Application.get_env(:abac_them, :hierarchy_service_url)
+    expansions_url = Application.get_env(:abac_them, :hierarchy_service_url) || "http://localhost:4010/expansions"
 
     attribute_json = Poison.encode!(%{name: name, value: value})
     headers = [{"content-type", "application/json"}]

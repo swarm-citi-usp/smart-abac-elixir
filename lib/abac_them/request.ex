@@ -8,7 +8,7 @@ defmodule ABACthem.Request do
           context_attrs: [Attr.t()]
         }
 
-  @hierarchy_client Application.get_env(:abac_them, :hierarchy_client)
+  @hierarchy_client Application.get_env(:abac_them, :hierarchy_client) || ABACthem.HierarchyClient
 
   def expand_attrs(request) do
     %__MODULE__{
