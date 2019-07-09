@@ -247,4 +247,16 @@ defmodule ABACthemTest do
 
     {:ok, policy_family: policy_family, policy_person: policy_person, request: request}
   end
+
+  describe "from real examples" do
+    test "attribute name must be string, not atom" do
+      assert PDP.match_attr("string",
+        {"s:Type", "http://citi.usp.br/ontology/SecurityCamera"},
+        %{data_type: "string", name: "s:Type", value: "http://citi.usp.br/ontology/SecurityCamera"})
+
+      refute PDP.match_attr("string",
+        {:"s:Type", "http://citi.usp.br/ontology/SecurityCamera"},
+        %{data_type: "string", name: "s:Type", value: "http://citi.usp.br/ontology/SecurityCamera"})
+    end
+  end
 end
