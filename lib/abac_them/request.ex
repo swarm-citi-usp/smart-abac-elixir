@@ -8,8 +8,6 @@ defmodule ABACthem.Request do
           context_attrs: [Attr.t()]
         }
 
-  @hierarchy_client Application.get_env(:abac_them, :hierarchy_client) || ABACthem.HierarchyClient
-
   def expand_attrs(request) do
     %__MODULE__{
       request
@@ -30,7 +28,7 @@ defmodule ABACthem.Request do
   def expand_attr(_name, value) when not is_binary(value), do: value
 
   def expand_attr(name, value) do
-    @hierarchy_client.expand_attr(name, value)
+    Application.get_env(:abac_them, :hierarchy_client).expand_attr(name, value)
     |> Enum.map(fn attr_name ->
       String.replace(attr_name, "http://br.citi.usp/swarm#", "s:")
     end)

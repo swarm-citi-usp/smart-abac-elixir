@@ -17,7 +17,7 @@ defmodule ABACthem.PDP do
   @doc """
   Tests whether the request attributes are allowed by a policy.
   """
-  # @decorate log(:debug)
+  Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
   def match_attrs(request_attrs, policy_attrs) do
     policy_attrs
     |> Enum.all?(fn policy_attr ->
@@ -36,9 +36,42 @@ defmodule ABACthem.PDP do
   Checks whether a date-time, provided by the request, is within a time window, specified in the policy.
   """
   def match_attr("time_interval", {_req_name, current_time}, policy_attr) do
-    [String.split(current_time, ~r/\s+/), String.split(policy_attr.value, ~r/\s+/)]
-    |> List.zip()
-    |> Enum.all?(fn {value, window} -> in_time_range?(value, window) end)
+    match_time_window(policy_attr.value, current_time)
+  end
+
+  def match_time_window(time_window, current_time) do
+    {start_time, finish_time} = decode_time_window(time_window)
+    {request_time, _} = decode_time_window(current_time)
+
+    request_time >= start_time && request_time <= finish_time
+  end
+
+  def decode_time_window(time_window) do
+    dummy_time = %DateTime{DateTime.utc_now | microsecond: {0, 0}}
+
+    time_window
+    |> String.split(~r/\s+/)
+    |> Enum.zip([:second, :minute, :hour, :day, :month, :year])
+    |> Enum.reduce({dummy_time, dummy_time}, fn {unit_value, unit}, {start_time, finish_time} ->
+      {start, finish} = split_unit(unit_value, unit)
+      {Map.put(start_time, unit, start), Map.put(finish_time, unit, finish)}
+    end)
+  end
+
+  def match_time_window_wildcard(time_window, current_time) do
+    [time_window, current_time]
+    |> Enum.map(&String.split(&1, ~r/\s+/))
+    |> Enum.zip()
+    |> Enum.reverse()
+    |> Enum.all?(fn {window, time} ->
+      if window == "*" do
+        true
+      else
+        {min, max} = split_unit(window)
+        time = String.to_integer(time)
+        time >= min && time <= max
+      end
+    end)
   end
 
   @doc """
@@ -97,6 +130,45 @@ defmodule ABACthem.PDP do
     end
   end
 
+  def split_unit("*", unit) do
+    %{
+      second: {0, 59},
+      minute: {0, 59},
+      hour: {0, 23},
+      day: {1, 31},
+      month: {1, 12},
+      year: {0, 2048*2048}
+    }[unit]
+  end
+
+  def split_unit(time_unit) do
+    String.split(time_unit, "-")
+    |> Enum.map(&String.to_integer/1)
+    |> case do
+      [value] ->
+        {value, value}
+
+      [left, right] ->
+        if left <= right do
+          {left, right}
+        else
+          {right, left}
+        end
+    end
+  end
+
+  def split_unit(time_unit, _unit) do
+    String.split(time_unit, "-")
+    |> Enum.map(&String.to_integer/1)
+    |> case do
+      [value] ->
+        {value, value}
+
+      [left, right] ->
+        {left, right}
+    end
+  end
+
   @doc """
   Match a numerical value against a range defined as a map.
   """
@@ -121,7 +193,7 @@ defmodule ABACthem.PDP do
 
   Returns true when the set `request_ops` is a subset of `policy_ops`.
   """
-  # @decorate log(:debug)
+  Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
   def match_operations([], _policy_ops), do: false
   def match_operations(_request_ops, []), do: false
   def match_operations(_request_ops, ["all"]), do: true
