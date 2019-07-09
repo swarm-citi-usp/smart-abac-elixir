@@ -3,10 +3,19 @@ defmodule ABACthem.Attr do
   Defines general attributes. Can be user, object, or context attributes.
 
   # User Attributes
-  TO-DO
+
+  Usually:
+
+    * Type
+    * Role
+    * Location
 
   # Object Attributes
-  TO-DO
+
+  Usually:
+
+    * Type
+    * Location
 
   # Context Attributes
   Regards attributes that do not fit neither Users nor Objects.
