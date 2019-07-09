@@ -17,7 +17,7 @@ defmodule ABACthem.PDP do
   @doc """
   Tests whether the request attributes are allowed by a policy.
   """
-  @decorate log(:debug)
+  Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
   def match_attrs(request_attrs, policy_attrs) do
     policy_attrs
     |> Enum.all?(fn policy_attr ->
@@ -141,7 +141,7 @@ defmodule ABACthem.PDP do
     }[unit]
   end
 
-  def split_unit(time_unit, _unit \\ []) do
+  def split_unit(time_unit) do
     String.split(time_unit, "-")
     |> Enum.map(&String.to_integer/1)
     |> case do
@@ -154,6 +154,18 @@ defmodule ABACthem.PDP do
         else
           {right, left}
         end
+    end
+  end
+
+  def split_unit(time_unit, _unit) do
+    String.split(time_unit, "-")
+    |> Enum.map(&String.to_integer/1)
+    |> case do
+      [value] ->
+        {value, value}
+
+      [left, right] ->
+        {left, right}
     end
   end
 
@@ -181,7 +193,7 @@ defmodule ABACthem.PDP do
 
   Returns true when the set `request_ops` is a subset of `policy_ops`.
   """
-  @decorate log(:debug)
+  Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
   def match_operations([], _policy_ops), do: false
   def match_operations(_request_ops, []), do: false
   def match_operations(_request_ops, ["all"]), do: true

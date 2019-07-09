@@ -11,9 +11,11 @@ defmodule ABACthemTest do
   end
 
   test "match time window" do
-    PDP.match_time_window("44 15-20 1 9 7 2019", "44 16 1 9 7 2019")
-    PDP.match_time_window("44 15-20 1 9 7 2019", "16 16 1 9 7 2019")
-    PDP.match_time_window("44 15-20 1 9 * *", "16 16 1 9 2 2020")
+    assert PDP.match_time_window("44 15-20 1 9 7 2019", "44 16 1 9 7 2019")
+    assert PDP.match_time_window("44 15-20 1 9 7 2019", "16 16 1 9 7 2019")
+    assert PDP.match_time_window("53-3 41-42 2 9 7 2019", "1 42 2 9 7 2019")
+
+    # PDP.match_time_window("44 15-20 1 9 * *", "16 16 1 9 2 2020") # not supported for now
   end
 
   test "decode time window" do
