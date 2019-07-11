@@ -1,0 +1,105 @@
+@prefix s: <http://br.citi.usp/swarm#> .
+@prefix policy_class: <http://policy_class.org.br/> .
+@prefix crud: <http://crud.org.br/> .
+
+# user attribute assignments
+s:Children
+    s:in s:FamilyMember;
+    s:name s:Role .
+s:Father
+    s:in s:AdultFamilyMember;
+    s:name s:Role .
+s:Mother
+    s:in s:AdultFamilyMember;
+    s:name s:Role .
+s:AdultFamilyMember
+    s:in s:FamilyMember;
+    s:name s:Role .
+s:FamilyMember
+    s:in s:Persona;
+    s:name s:Role .
+
+s:Friend
+    s:in s:Acquaintance;
+    s:name s:Role .
+s:Acquaintance
+    s:in s:Persona;
+    s:name s:Role .
+
+s:Gardener
+    s:in s:AssistantGardener;
+    s:name s:Role .
+s:AssistantGardener
+    s:in s:Employee;
+    s:name s:Role .
+s:Maid
+    s:in s:Employee;
+    s:name s:Role .
+s:Employee
+    s:in s:Persona;
+    s:name s:Role .
+
+
+# object attribute assignments
+s:SecurityCamera
+    s:in s:SecurityAppliance;
+    s:name s:Type .
+s:IntrusionAlarm
+    s:in s:SecurityAppliance;
+    s:name s:Type .
+s:SecurityAppliance
+    s:in s:Appliance;
+    s:name s:Type .
+
+s:TV
+    s:in s:EntertainmentAppliance;
+    s:name s:Type .
+s:HomeTheater
+    s:in s:EntertainmentAppliance;
+    s:name s:Type .
+s:EntertainmentAppliance
+    s:in s:HomeAppliance;
+    s:name s:Type .
+
+s:LawnMower
+    s:in s:CleaningAppliance;
+    s:name s:Type .
+s:VacuumCleaner
+    s:in s:CleaningAppliance;
+    s:name s:Type .
+s:CleaningAppliance
+    s:in s:HomeAppliance;
+    s:name s:Type .
+
+s:Door
+    s:in s:HomeAppliance;
+    s:name s:Type .
+s:Window
+    s:in s:HomeAppliance;
+    s:name s:Type .
+
+s:HomeAppliance
+    s:in s:Appliance;
+    s:name s:Type .
+
+# general assignments
+s:Sidewalk
+    s:in s:Outdoor;
+    s:name s:Location .
+
+s:Kitchen
+    s:in s:Indoor;
+    s:name s:Location .
+
+# user attributes to object attributes associations (aka permissions)
+s:Children crud:read s:EntertainmentAppliance .
+s:Children crud:update s:EntertainmentAppliance .
+s:AdultFamilyMember crud:read s:Appliance .
+s:AdultFamilyMember crud:update s:Appliance .
+s:Acquaintance crud:read s:EntertainmentAppliance .
+s:Acquaintance crud:update s:EntertainmentAppliance .
+
+s:Gardener crud:read s:LawnMower .
+s:Gardener crud:update s:LawnMower .
+
+s:Maid crud:update s:CleaningAppliance .
