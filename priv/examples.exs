@@ -1,59 +1,61 @@
-policies = [
+[
   %ABACthem.Policy{
-    id: "...",
+    id: "#{System.unique_integer([:positive])}",
     name: "Adult home control",
     user_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Type", value: "s:AdultFamilyMember"}
+      %ABACthem.Attr{data_type: "string", name: "s:Type", value: "s:AdultFamilyMember"}
     ],
     operations: ["all"],
     object_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Type", value: "s:Appliance"}
+      %ABACthem.Attr{data_type: "string", name: "s:Type", value: "s:Appliance"}
     ]
   },
   %ABACthem.Policy{
-    id: "...",
+    id: "#{System.unique_integer([:positive])}",
     name: "Children home control",
     user_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Type", value: "s:Children"}
+      %ABACthem.Attr{data_type: "string", name: "s:Type", value: "s:Children"}
     ],
     operations: ["read", "update"],
     object_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Type", value: "s:EntertainmentAppliance"}
+      %ABACthem.Attr{data_type: "string", name: "s:Type", value: "s:EntertainmentAppliance"}
     ]
   },
   %ABACthem.Policy{
-    id: "...",
+    id: "#{System.unique_integer([:positive])}",
     name: "Emergency home access",
     user_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Type", value: "s:Persona"},
-      %ABACthem.Attr{data_type: "range", name: "Reputation", value: %{min: 4}}
+      %ABACthem.Attr{data_type: "string", name: "s:Type", value: "s:Persona"},
+      %ABACthem.Attr{data_type: "range", name: "s:Reputation", value: %{min: 4}}
     ],
     operations: ["read", "update"],
     object_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Type", value: "s:HomeAppliance"}
+      %ABACthem.Attr{data_type: "string", name: "s:Type", value: "s:HomeAppliance"}
     ],
     context_attrs: [
-      %ABACthem.Attr{data_type: "string", name: "Situation", value: "s:Emergency"}
+      %ABACthem.Attr{data_type: "string", name: "s:Situation", value: "s:Emergency"}
     ]
   }
-]
+] |> Enum.each(&ABACthem.Store.update(&1))
 
 # NOTE: these examples only work if the Hierachy Service is running on backgrond.
 
-# iex(20)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:Door"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"s:Type" => "s:Door"}})
 # true
-# iex(21)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"s:Type" => "s:SecurityCamera"}})
 # true
-# iex(22)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:FamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:FamilyMember"}, operations: ["read"], object_attrs: %{"s:Type" => "s:SecurityCamera"}})
 # false
-# iex(23)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Children"}, operations: ["read"], object_attrs: %{"Type" => "s:SecurityCamera"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:Children"}, operations: ["read"], object_attrs: %{"s:Type" => "s:SecurityCamera"}})
 # false
-# iex(24)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Children"}, operations: ["read"], object_attrs: %{"Type" => "s:TV"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:Children"}, operations: ["read"], object_attrs: %{"s:Type" => "s:TV"}})
 # true
-# iex(25)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 4.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:Persona", "s:Reputation" => 4.5}, operations: ["update"], object_attrs: %{"s:Type" => "s:Door"}, context_attrs: %{"s:Situation" => "s:Emergency"}})
 # true
-# iex(26)> ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:Persona", "Reputation" => 2.5}, operations: ["update"], object_attrs: %{"Type" => "s:Door"}, context_attrs: %{"Situation" => "s:Emergency"}}, policies)
+ABACthem.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:Persona", "s:Reputation" => 2.5}, operations: ["update"], object_attrs: %{"s:Type" => "s:Door"}, context_attrs: %{"s:Situation" => "s:Emergency"}})
 # false
 
 
-ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"Type" => "s:HomeAppliance"}}, policies)
+# this one does not need hierarchy
+ABACthem.PDP.authorize(%ABACthem.Request{user_attrs: %{"s:Type" => "s:AdultFamilyMember"}, operations: ["read"], object_attrs: %{"s:Type" => "s:HomeAppliance"}}, policies)
+#true
