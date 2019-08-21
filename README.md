@@ -1,18 +1,18 @@
 # ABAC-them
 
-This is a new access control model.
+This is a new Attribute-Based Access Control (ABAC) model.
 
 It is named after the initial of its features:
 
 - Typed: attributes have types
 - Hierarchical: attributes can have hierarchies
-- Enumeration: policies are created by enumerating accepted values
-- Multiple Attributes: each policy container can have more than one attribute
+- Enumerated: policies are created by enumerating accepted values
+- Multi-Attribute: each policy container can have more than one attribute
 
 ## Installation
 
 ```
-$ git clone git@gitlab.com:swarm-unit/fepama.git
+$ git clone git@gitlab.com:swarm-unit/abac-them.git
 $ mix deps.get
 $ mix test # run the tests to ensure everything is working
 ```
@@ -21,7 +21,7 @@ $ mix test # run the tests to ensure everything is working
 
 Use `iex -S mix` for running `ABACthem` application.
 
-If you want to benefit from the [Hierarchy Service](), be sure to start it up as well.
+If you want to benefit from the [Hierarchy Service](), be sure to start it up as well: `cd priv/abac_them_hierarchy && python abac_them_hierarchy/service.py -g tests/example_home_policy.n3`
 
 ## Example
 
@@ -109,7 +109,7 @@ ABACthem.authorize(request) # true
   ],
   context_attrs: [
     # ADJUST the date and time below to test this!
-    %Attr{data_type: "time_interval", name: "swarm:DateTime", value: "0-60 1-5 14 19 6 2019"}
+    %Attr{data_type: "time_interval", name: "swarm:DateTime", value: "0-60 1-10 21 21 8 2019"}
   ]
 } |> Store.update()
 

@@ -43,7 +43,7 @@ swarm:Employee
 # object attribute assignments
 swarm:SecurityCamera
     abac:in swarm:SecurityAppliance;
-    abac:name swarm:type .
+    abac:name swarm:Type .
 swarm:IntrusionAlarm
     abac:in swarm:SecurityAppliance;
     abac:name swarm:Type .
