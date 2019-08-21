@@ -119,4 +119,6 @@ defmodule ABACthem.Policy do
           object_attrs: [Attr.t()],
           context_attrs: [Attr.t()]
         }
+
+  def operations, do: ["create", "read", "update", "delete", "discover"]
 end

@@ -251,12 +251,12 @@ defmodule ABACthemTest do
   describe "from real examples" do
     test "attribute name must be string, not atom" do
       assert PDP.match_attr("string",
-        {"s:Type", "http://citi.usp.br/ontology/SecurityCamera"},
-        %{data_type: "string", name: "s:Type", value: "http://citi.usp.br/ontology/SecurityCamera"})
+        {"swarm:Type", "swarm:SecurityCamera"},
+        %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"})
 
       refute PDP.match_attr("string",
-        {:"s:Type", "http://citi.usp.br/ontology/SecurityCamera"},
-        %{data_type: "string", name: "s:Type", value: "http://citi.usp.br/ontology/SecurityCamera"})
+        {:"swarm:Type", "swarm:SecurityCamera"},
+        %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"})
     end
   end
 end

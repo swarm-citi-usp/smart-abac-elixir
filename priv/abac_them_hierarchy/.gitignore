@@ -91,3 +91,5 @@ ENV/
 
 keys.json
 *.swp
+
+.pytest_cache

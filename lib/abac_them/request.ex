@@ -30,7 +30,8 @@ defmodule ABACthem.Request do
   def expand_attr(name, value) do
     Application.get_env(:abac_them, :hierarchy_client).expand_attr(name, value)
     |> Enum.map(fn attr_name ->
-      String.replace(attr_name, "http://br.citi.usp/swarm#", "s:")
+      # FIXME
+      String.replace(attr_name, "http://iotswarm.info/ontology#", "swarm:")
     end)
   end
 

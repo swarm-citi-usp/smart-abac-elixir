@@ -11,8 +11,8 @@ def client():
 
 def test_expand(client):
     # access_request = {
-    #     'user_attr': 's:group1',
-    #     'object_attr': 's:project1',
+    #     'user_attr': 'swarm:group1',
+    #     'object_attr': 'swarm:project1',
     #     'operation': 'crud:read'
     # }
 
