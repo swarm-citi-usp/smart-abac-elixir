@@ -1,6 +1,5 @@
 # ABAC-them hierarchy
 
-
 Run the service with:
 
 ```

@@ -23,9 +23,9 @@ def expand_attributes(graph, attr_name, attr_value):
         """
         SELECT DISTINCT ?name ?value
         WHERE {{
-            {0} s:in* ?value .
-            {0} s:name {1} .
-            {0} s:name ?name .
+            {0} abac:in* ?value .
+            {0} abac:name {1} .
+            {0} abac:name ?name .
             FILTER(!regex(str(?value), "policy_class")) .
         }}
         """.format(attr_value, attr_name))
