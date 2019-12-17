@@ -12,8 +12,10 @@ def expand():
     attribute = request.get_json()
     print(attribute)
 
-    expanded_attributes = expand_attributes(
-        graph, attribute["name"], attribute["value"].replace("http://iotswarm.info/ontology#", "swarm:"))
+    attribute_name = attribute["name"].replace("http://iotswarm.info/ontology#", "swarm:")
+    attribute_value = attribute["value"].replace("http://iotswarm.info/ontology#", "swarm:")
+
+    expanded_attributes = expand_attributes(graph, attribute_name, attribute_value)
 
     if len(expanded_attributes) > 0:
         expanded_attributes = list(map(
