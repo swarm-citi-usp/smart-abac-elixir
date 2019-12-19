@@ -57,11 +57,30 @@ defmodule PerfTest do
     end_ms - start_ms
   end
 
+  def write_to_file(tests) do
+    File.write("./priv/results.json", Poison.encode!(tests, pretty: true))
+  end
+
   test "perf" do
-    run([5, 10], [5, 10]) # warm up
+    tests = %{}
+
+    result_warmup = run([5, 10, 15], [5, 10]) # warm up
+    tests = Map.put(tests, :result_warmup, result_warmup)
     IO.puts("==== Warm up OK. Start real test ==== \n\n\n")
 
-    run(Enum.take_every(400..2000, 400), [1, 10, 100])
+    result = run(Enum.take_every(500..2000, 500), [50, 100])
+    tests = Map.put(tests, :result, result)
+    IO.puts("==== Regular test OK. ==== \n\n\n")
+
+    # enable hierarchies
+    Application.put_env(:abac_them, :hierarchy_client, ABACthem.HierarchyClient)
+    result_h = run(Enum.take_every(500..2000, 500), [50, 100])
+    tests = Map.put(tests, :result_h, result_h)
+    # run([0, 5, 10], [5, 10])
+    IO.puts("==== Hierarchy test OK. ==== \n\n\n")
+
+    write_to_file(tests)
+    System.cmd("python3", ["./priv/plot.py"]) |> IO.inspect
   end
 
   def run(m_list, n_list) do
@@ -78,25 +97,35 @@ defmodule PerfTest do
     for m <- m_list do
       for n <- n_list do
         IO.inspect("Will test #{inspect {n, m}}")
-        test = %{m: m, n: n, denied_ms: nil, allowed_ms: nil}
-        ps = all_ps[{m, n}]
+        tests =
+          for _ <- 1..10 do
+            IO.write(".")
+            ps = all_ps[{m, n}]
 
-        start_ms = start()
-        refute PDP.authorize(request, ps)
-        denied_ms = finish(start_ms)
+            start_ms = start()
+            refute PDP.authorize(Request.expand_attrs(request), ps)
+            denied_ms = finish(start_ms)
 
-        ps = insert_known_policy_at_half(ps, known_policy)
-        start_ms = start()
-        assert PDP.authorize(request, ps)
-        allowed_ms = finish(start_ms)
+            ps = insert_known_policy_at_half(ps, known_policy)
+            start_ms = start()
+            assert PDP.authorize(Request.expand_attrs(request), ps)
+            allowed_ms = finish(start_ms)
 
+            %{
+              denied_ms: denied_ms,
+              allowed_ms: allowed_ms
+            }
+          end
+
+        IO.puts ""
         %{
-          test |
-          denied_ms: denied_ms,
-          allowed_ms: allowed_ms
+          m: m, n: n,
+          denied_ms: Enum.map(tests, fn test -> test[:denied_ms] end) |> Enum.sum |> Kernel./(length(tests)),
+          allowed_ms: Enum.map(tests, fn test -> test[:allowed_ms] end) |> Enum.sum |> Kernel./(length(tests))
         }
       end
     end
+    |> List.flatten()
   end
 
   def generate_policies(m_list, n_list) do
@@ -117,24 +146,24 @@ defmodule PerfTest do
       id: "...",
       name: "Adult Home Control",
       user_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "Person"},
-        %Attr{data_type: "range", name: "Age", value: %{min: 18}}
+        %Attr{data_type: "string", name: "swarm:Type", value: "swarm:Person"},
+        %Attr{data_type: "range", name: "swarm:Age", value: %{min: 18}}
       ],
       operations: ["read"],
       object_attrs: [
-        %Attr{data_type: "string", name: "Type", value: "AirConditioner"}
+        %Attr{data_type: "string", name: "swarm:Type", value: "swarm:AirConditioner"}
       ]
     }
 
     request = %Request{
       user_attrs: %{
-        "Id" => "1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
-        "Type" => "Person",
-        "Age" => 25
+        "swarm:Id" => "swarm:1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
+        "swarm:Type" => "swarm:Person",
+        "swarm:Age" => 25
       },
       object_attrs: %{
-        "Type" => "AirConditioner",
-        "Location" => "Kitchen"
+        "swarm:Type" => "swarm:AirConditioner",
+        "swarm:Location" => "swarm:Kitchen"
       },
       operations: ["read"]
     }

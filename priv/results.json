@@ -1,0 +1,140 @@
+{
+  "result_warmup": [
+    {
+      "n": 5,
+      "m": 5,
+      "denied_ms": 0.1,
+      "allowed_ms": 0.2
+    },
+    {
+      "n": 10,
+      "m": 5,
+      "denied_ms": 0.0,
+      "allowed_ms": 0.0
+    },
+    {
+      "n": 5,
+      "m": 10,
+      "denied_ms": 0.1,
+      "allowed_ms": 0.0
+    },
+    {
+      "n": 10,
+      "m": 10,
+      "denied_ms": 0.0,
+      "allowed_ms": 0.0
+    },
+    {
+      "n": 5,
+      "m": 15,
+      "denied_ms": 0.0,
+      "allowed_ms": 0.0
+    },
+    {
+      "n": 10,
+      "m": 15,
+      "denied_ms": 0.0,
+      "allowed_ms": 0.0
+    }
+  ],
+  "result_h": [
+    {
+      "n": 50,
+      "m": 500,
+      "denied_ms": 133.8,
+      "allowed_ms": 42.1
+    },
+    {
+      "n": 100,
+      "m": 500,
+      "denied_ms": 47.5,
+      "allowed_ms": 43.2
+    },
+    {
+      "n": 50,
+      "m": 1000,
+      "denied_ms": 45.1,
+      "allowed_ms": 43.4
+    },
+    {
+      "n": 100,
+      "m": 1000,
+      "denied_ms": 53.3,
+      "allowed_ms": 50.1
+    },
+    {
+      "n": 50,
+      "m": 1500,
+      "denied_ms": 50.9,
+      "allowed_ms": 48.6
+    },
+    {
+      "n": 100,
+      "m": 1500,
+      "denied_ms": 60.6,
+      "allowed_ms": 62.5
+    },
+    {
+      "n": 50,
+      "m": 2000,
+      "denied_ms": 53.5,
+      "allowed_ms": 48.1
+    },
+    {
+      "n": 100,
+      "m": 2000,
+      "denied_ms": 68.8,
+      "allowed_ms": 61.6
+    }
+  ],
+  "result": [
+    {
+      "n": 50,
+      "m": 500,
+      "denied_ms": 0.7,
+      "allowed_ms": 0.5
+    },
+    {
+      "n": 100,
+      "m": 500,
+      "denied_ms": 3.6,
+      "allowed_ms": 1.8
+    },
+    {
+      "n": 50,
+      "m": 1000,
+      "denied_ms": 3.6,
+      "allowed_ms": 2.1
+    },
+    {
+      "n": 100,
+      "m": 1000,
+      "denied_ms": 8.9,
+      "allowed_ms": 5.3
+    },
+    {
+      "n": 50,
+      "m": 1500,
+      "denied_ms": 6.4,
+      "allowed_ms": 3.3
+    },
+    {
+      "n": 100,
+      "m": 1500,
+      "denied_ms": 12.5,
+      "allowed_ms": 6.2
+    },
+    {
+      "n": 50,
+      "m": 2000,
+      "denied_ms": 8.4,
+      "allowed_ms": 4.2
+    },
+    {
+      "n": 100,
+      "m": 2000,
+      "denied_ms": 22.9,
+      "allowed_ms": 11.3
+    }
+  ]
+}

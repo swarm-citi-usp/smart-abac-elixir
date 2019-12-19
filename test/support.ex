@@ -78,3 +78,7 @@ defmodule PolicyInspect do
     """
   end
 end
+
+defmodule HierarchyClientMock do
+  def expand_attr(_, value), do: [value]
+end

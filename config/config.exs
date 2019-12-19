@@ -6,4 +6,6 @@ config :abac_them, hierarchy_client: ABACthem.HierarchyClient
 config :abac_them, hierarchy_service_url: "http://localhost:4010/expansions"
 config :abac_them, debug_pdp: false
 
+config :logger, level: :error
+
 import_config "#{Mix.env()}.exs"
