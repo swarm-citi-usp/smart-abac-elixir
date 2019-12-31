@@ -12,45 +12,10 @@ defmodule ABACthemTest do
     refute PDP.match_attr(policy_attr.data_type, {"Type", "Camera"}, policy_attr)
   end
 
-  test "match time window" do
-    assert PDP.match_time_window("44 15-20 1 9 7 2019", "44 16 1 9 7 2019")
-    assert PDP.match_time_window("44 15-20 1 9 7 2019", "16 16 1 9 7 2019")
-    assert PDP.match_time_window("53-3 41-42 2 9 7 2019", "1 42 2 9 7 2019")
-
-    # PDP.match_time_window("44 15-20 1 9 * *", "16 16 1 9 2 2020") # not supported for now
-  end
-
-  test "decode time window" do
-    {min, max} = PDP.decode_time_window("44 15-20 1 9 7 2019")
-    assert min < max
-    assert min.minute == 15
-    assert max.minute == 20
-
-    # the order of the number does not matter
-    {min, max} = PDP.decode_time_window("44-2 15-20 1 9 7 2019")
-    assert min < max
-
-    {min, max} = PDP.decode_time_window("16 16 1 9 7 2019")
-    assert min == max
-  end
-
-  @tag :skip
-  test "match context against policy context" do
-    # FIXME: wildcard time intervals behave different than concrete intervals
-    day_time_attr = %Attr{data_type: "time_interval", name: "DateTime", value: "* * 6-22 * * *"}
-    refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 5  1 1 2019"}, day_time_attr)
-    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 6  1 1 2019"}, day_time_attr)
-    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 7  1 1 2019"}, day_time_attr)
-    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 21 1 1 2019"}, day_time_attr)
-    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 22 1 1 2019"}, day_time_attr)
-
-    # TODO: fix this:
-    refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 23 1 1 2019"}, day_time_attr)
-  end
-
   test "match context against concrete policy context" do
-    day_time_attr = %Attr{data_type: "time_interval", name: "DateTime", value: "44 15-20 1 9 7 2019"}
-    assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "16 16 1 9 7 2019"}, day_time_attr)
+    # day_time_attr = %Attr{data_type: "range", name: "DateTime", value: "44 15-20 1 9 7 2019"}
+    day_time_attr = %Attr{data_type: "range", name: "Timestamp", value: %{min: 1562634944, max: 1562635244}}
+    assert PDP.match_attr(day_time_attr.data_type, {"Timestamp", 1562634976}, day_time_attr)
   end
 
   test "match numerical ranges" do
@@ -115,15 +80,15 @@ defmodule ABACthemTest do
     } do
       request =
         Map.put(request, :context_attrs, %{
-          "DateTime" => "0 0 6  1 1 2019"
+          "Hour" => 6
         })
 
       policy_person =
         Map.put(policy_person, :context_attrs, [
           %Attr{
-            data_type: "time_interval",
-            name: "DateTime",
-            value: "* * 6-22 * * *"
+            data_type: "range",
+            name: "Hour",
+            value: %{min: 6, max: 22}
           }
         ])
 
@@ -259,6 +224,45 @@ defmodule ABACthemTest do
       refute PDP.match_attr("string",
         {:"swarm:Type", "swarm:SecurityCamera"},
         %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"})
+    end
+  end
+
+  # TODO: remove the tests below after removing support for DateTime attributes
+  describe "testing DateTime attributes. this is legacy code, support will be removed soon." do
+    test "match time window" do
+      assert PDP.match_time_window("44 15-20 1 9 7 2019", "44 16 1 9 7 2019")
+      assert PDP.match_time_window("44 15-20 1 9 7 2019", "16 16 1 9 7 2019")
+      assert PDP.match_time_window("53-3 41-42 2 9 7 2019", "1 42 2 9 7 2019")
+
+      # PDP.match_time_window("44 15-20 1 9 * *", "16 16 1 9 2 2020") # not supported for now
+    end
+
+    test "decode time window" do
+      {min, max} = PDP.decode_time_window("44 15-20 1 9 7 2019")
+      assert min < max
+      assert min.minute == 15
+      assert max.minute == 20
+
+      # the order of the number does not matter
+      {min, max} = PDP.decode_time_window("44-2 15-20 1 9 7 2019")
+      assert min < max
+
+      {min, max} = PDP.decode_time_window("16 16 1 9 7 2019")
+      assert min == max
+    end
+
+    @tag :skip
+    test "match context against policy context" do
+      # FIXME: wildcard time intervals behave different than concrete intervals
+      day_time_attr = %Attr{data_type: "time_interval", name: "DateTime", value: "* * 6-22 * * *"}
+      refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 5  1 1 2019"}, day_time_attr)
+      assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 6  1 1 2019"}, day_time_attr)
+      assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 7  1 1 2019"}, day_time_attr)
+      assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 21 1 1 2019"}, day_time_attr)
+      assert PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 22 1 1 2019"}, day_time_attr)
+
+      # TODO: fix this:
+      refute PDP.match_attr(day_time_attr.data_type, {"DateTime", "0 0 23 1 1 2019"}, day_time_attr)
     end
   end
 end
