@@ -3,7 +3,7 @@ defmodule ABACthemTest do
   doctest ABACthem
   alias ABACthem.{PDP, Attr, Policy, Request}
 
-  Application.put_env(:abac_them, :hierarchy_client, ABACthem.AttrHierarchyClientMock)
+  Application.put_env(:abac_them, :hierarchy_client, ABACthemTest.AttrHierarchyClientMock)
 
   test "match single request attribute against policy attribute" do
     policy_attr = %Attr{data_type: "string", name: "Type", value: "Person"}
