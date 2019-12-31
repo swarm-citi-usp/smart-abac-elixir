@@ -1,21 +1,35 @@
 import flask
 from flask import request, jsonify
 import argparse
+import datetime
 from abac_them_hierarchy import open_ontology_graph, expand_attributes
+
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 app = flask.Flask(__name__)
 global graph
 
+summa = 0
+i = 0
 
 @app.route("/expansions", methods=["POST"])
 def expand():
+    global summa, i
+
     attribute = request.get_json()
-    print(attribute)
+    # print(attribute)
 
     attribute_name = attribute["name"].replace("http://iotswarm.info/ontology#", "swarm:")
     attribute_value = attribute["value"].replace("http://iotswarm.info/ontology#", "swarm:")
 
+    start_us = datetime.datetime.now()
     expanded_attributes = expand_attributes(graph, attribute_name, attribute_value)
+    ms = (datetime.datetime.now() - start_us).total_seconds() * 1000
+    summa += ms
+    i += 1
+    # print("Finished in %s ms" % ms)
 
     if len(expanded_attributes) > 0:
         expanded_attributes = list(map(
@@ -27,6 +41,9 @@ def expand():
 
     return jsonify(expanded_attributes), 200, {'Content-Type': 'application/json'}
 
+@app.route("/avg", methods=["GET"])
+def avg():
+    return jsonify({"avg": summa / i})
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
