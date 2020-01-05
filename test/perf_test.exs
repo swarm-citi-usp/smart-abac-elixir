@@ -16,20 +16,23 @@ defmodule PerfTest do
     ["Type", "Role", "Family", "Location"] |> Enum.random()
   end
 
-  def value do
+  def value("string") do
     # :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
     "KhH6Z3R5ZnSeAGRGA8r6Jg"
   end
+  def value("number"), do: :rand.uniform()*10 |> Float.round(2)
+  def value("range"), do: %{min: value("number"), max: value("number")}
 
   def attributes(n) do
     for _ <- 1..n do
-      %Attr{data_type: type(), name: name(), value: value()}
+      t = type()
+      %Attr{data_type: t, name: name(), value: value(t)}
     end
   end
 
   def operations(n) do
     for _ <- 1..n do
-      value()
+      value("string")
     end
   end
 
@@ -42,6 +45,10 @@ defmodule PerfTest do
         context_attrs: attributes(n)
       }
     end
+  end
+
+  def write_policies_to_file(ps, m, n) do
+    File.write("./priv/generated/#{m}-#{n}.json", Poison.encode!(ps, pretty: true))
   end
 
   def insert_known_policy_at_half(ps, known_policy) do
@@ -61,7 +68,8 @@ defmodule PerfTest do
     File.write("./priv/results.json", Poison.encode!(tests, pretty: true))
   end
 
-  @tag :skip
+  #@tag :skip
+  @tag timeout: :infinity
   test "perf" do
     tests = %{}
 
@@ -69,14 +77,15 @@ defmodule PerfTest do
     tests = Map.put(tests, :result_warmup, result_warmup)
     IO.puts("==== Warm up OK. Start real test ==== \n\n\n")
 
-    result = run(Enum.take_every(500..2000, 500), [50, 100])
+    #result = run(Enum.take_every(500..2000, 500), [50, 100])
+    result = run(Enum.take_every(2000..2000, 500), [100])
     tests = Map.put(tests, :result, result)
     IO.puts("==== Regular test OK. ==== \n\n\n")
 
     # enable hierarchies
     Application.put_env(:abac_them, :hierarchy_client, ABACthem.HierarchyClient)
-    result_h = run(Enum.take_every(500..2000, 500), [50, 100])
-    tests = Map.put(tests, :result_h, result_h)
+    #result_h = run(Enum.take_every(500..2000, 500), [50, 100])
+    #tests = Map.put(tests, :result_h, result_h)
     # run([0, 5, 10], [5, 10])
     IO.puts("==== Hierarchy test OK. ==== \n\n\n")
 
@@ -108,6 +117,7 @@ defmodule PerfTest do
             denied_ms = finish(start_ms)
 
             ps = insert_known_policy_at_half(ps, known_policy)
+            write_policies_to_file(ps, m, n)
             start_ms = start()
             assert PDP.authorize(Request.expand_attrs(request), ps)
             allowed_ms = finish(start_ms)
@@ -148,7 +158,7 @@ defmodule PerfTest do
       name: "Adult Home Control",
       user_attrs: [
         %Attr{data_type: "string", name: "swarm:Type", value: "swarm:Person"},
-        %Attr{data_type: "range", name: "swarm:Age", value: %{min: 18}}
+        %Attr{data_type: "range", name: "swarm:Age", value: %{min: 18.0, max: 100.0}}
       ],
       operations: ["read"],
       object_attrs: [
@@ -160,7 +170,7 @@ defmodule PerfTest do
       user_attrs: %{
         "swarm:Id" => "swarm:1atJsQno5yjJE7raHWSV4Py3b9BndatXGzbB88f7QYsZLhvHSG",
         "swarm:Type" => "swarm:Person",
-        "swarm:Age" => 25
+        "swarm:Age" => 25.0
       },
       object_attrs: %{
         "swarm:Type" => "swarm:AirConditioner",
