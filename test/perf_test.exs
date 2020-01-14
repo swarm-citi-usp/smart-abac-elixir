@@ -68,7 +68,7 @@ defmodule PerfTest do
     File.write("./priv/results.json", Poison.encode!(tests, pretty: true))
   end
 
-  #@tag :skip
+  @tag :skip
   @tag timeout: :infinity
   test "perf" do
     tests = %{}

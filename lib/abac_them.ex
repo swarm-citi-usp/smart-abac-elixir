@@ -8,6 +8,7 @@ defmodule ABACthem do
 
     request
       |> ABACthem.Request.expand_attrs()
+      |> IO.inspect
       |> ABACthem.Request.add_date_time_attr()
       |> ABACthem.PDP.authorize(policies)
   end
