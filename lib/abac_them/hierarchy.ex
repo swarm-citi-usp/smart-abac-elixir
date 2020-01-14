@@ -46,7 +46,9 @@ defmodule ABACthem.Hierarchy do
   end
 
   def parse(graph) do
-    String.split(graph, ".\n")
+    graph
+    |> String.replace(~r/\n#.*\n/, "\n")
+    |> String.split(".\n")
     |> Enum.map(&String.trim/1)
     |> Enum.reject(fn e ->
       e == "" || e =~ "prefix" || e =~ ~r/^#/
@@ -62,7 +64,7 @@ defmodule ABACthem.Hierarchy do
         end)
         |> Enum.into(%{})
 
-      {data["abac:in"], node}
+      {node, data["abac:in"]}
     end)
   end
 

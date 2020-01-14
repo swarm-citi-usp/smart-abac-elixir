@@ -3,24 +3,38 @@ defmodule HierarchyTest do
   alias ABACthem.{Hierarchy}
 
   test "expand attrs" do
-    assert ["swarm:Father"] == Hierarchy.expand_attr("swarm:Father")
+    assert [
+             "swarm:AdultFamilyMember",
+             "swarm:FamilyMember",
+             "swarm:Father",
+             "swarm:Persona"
+           ] == Hierarchy.expand_attr("swarm:Father") |> Enum.sort()
 
-    assert ["swarm:FamilyMember", "swarm:Father", "swarm:Mother", "swarm:AdultFamilyMember"] ==
-             Hierarchy.expand_attr("swarm:FamilyMember")
+    assert ["swarm:FamilyMember", "swarm:Persona"] ==
+             Hierarchy.expand_attr("swarm:FamilyMember") |> Enum.sort()
+
+    assert [
+      "swarm:Appliance",
+      "swarm:SecurityAppliance",
+      "swarm:SecurityCamera",
+    ] == Hierarchy.expand_attr("swarm:SecurityCamera") |> Enum.sort()
   end
 
   test "run bfs" do
     graph = %{
-      "c" => ["a", "b"],
-      "d" => ["c", "e"],
-      "e" => ["f"],
-      "g" => ["e"]
+      "a" => ["c"],
+      "b" => ["c"],
+      "c" => ["d"],
+      "d" => [],
+      "e" => ["g", "d"],
+      "f" => ["e"],
+      "h" => []
     }
 
-    assert ["f", "e"] = Hierarchy.bfs(graph, ["g"], [])
-    assert ["f", "b", "a", "e", "c"] = Hierarchy.bfs(graph, ["d"], [])
-    assert [] = Hierarchy.bfs(graph, ["a"], [])
-    assert ["b", "a"] = Hierarchy.bfs(graph, ["c"], [])
+    assert ["c", "d"] = Hierarchy.bfs(graph, ["a"], []) |> Enum.sort()
+    assert ["c", "d"] = Hierarchy.bfs(graph, ["b"], []) |> Enum.sort()
+    assert [] = Hierarchy.bfs(graph, ["d"], [])
+    assert ["d", "e", "g"] = Hierarchy.bfs(graph, ["f"], []) |> Enum.sort()
   end
 
   test "parse graph from file" do
@@ -30,7 +44,7 @@ defmodule HierarchyTest do
       Hierarchy.parse(graph_str)
       |> Hierarchy.to_adjacency_list()
 
-    assert graph["swarm:Acquaintance"] == ["swarm:Friend"]
+    assert ["swarm:Acquaintance"] == graph["swarm:Friend"]
   end
 
   test "parse graph inline" do
@@ -50,8 +64,8 @@ defmodule HierarchyTest do
 
     graph = Hierarchy.parse(graph_str)
 
-    assert {"swarm:FamilyMember", "swarm:Children"} in graph
-    assert {"swarm:AdultFamilyMember", "swarm:Father"} in graph
-    assert {"swarm:Boss", "swarm:Father"} in graph
+    assert {"swarm:Children", "swarm:FamilyMember"} in graph
+    assert {"swarm:Father", "swarm:AdultFamilyMember"} in graph
+    assert {"swarm:Father", "swarm:Boss"} in graph
   end
 end
