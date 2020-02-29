@@ -1,13 +1,34 @@
 defmodule ABACthem.Hierarchy do
+  require Logger
+
+  def start_link(_args \\ []) do
+    Logger.info("Opening ABAC hierarchy...")
+
+    Agent.start_link(fn ->
+      "abac_them_hierarchy/tests/example_home_policy.n3"
+      |> open()
+      |> parse()
+      |> to_adjacency_list()
+    end, name: __MODULE__)
+  end
+
+  def child_spec(arg) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [arg]}
+    }
+  end
+
+  def get_graph() do
+    Agent.get(__MODULE__, fn graph -> graph end)
+  end
+
   def expand_attr(_name, value) do
     expand_attr(value)
   end
 
   def expand_attr(name) do
-    "abac_them_hierarchy/tests/example_home_policy.n3"
-    |> open()
-    |> parse()
-    |> to_adjacency_list()
+    get_graph()
     |> find_ancestors(name)
   end
 
@@ -24,7 +45,7 @@ defmodule ABACthem.Hierarchy do
 
     {new_queue, new_visited} =
       Enum.reduce(graph[s] || [], {queue, visited}, fn n, {new_queue, new_visited} ->
-        if n not in visited do
+        if n not in new_visited do
           {new_queue ++ [n], [n | new_visited]}
         else
           {new_queue, new_visited}

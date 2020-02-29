@@ -77,15 +77,16 @@ defmodule PerfTest do
     tests = Map.put(tests, :result_warmup, result_warmup)
     IO.puts("==== Warm up OK. Start real test ==== \n\n\n")
 
-    #result = run(Enum.take_every(500..2000, 500), [50, 100])
-    result = run(Enum.take_every(2000..2000, 500), [100])
+    result = run(Enum.take_every(500..2000, 500), [50, 100])
+    # result = run(Enum.take_every(2000..2000, 500), [100])
     tests = Map.put(tests, :result, result)
     IO.puts("==== Regular test OK. ==== \n\n\n")
 
     # enable hierarchies
-    Application.put_env(:abac_them, :hierarchy_client, ABACthem.HierarchyClient)
-    #result_h = run(Enum.take_every(500..2000, 500), [50, 100])
-    #tests = Map.put(tests, :result_h, result_h)
+    ABACthem.Hierarchy.start_link()
+    Application.put_env(:abac_them, :hierarchy_client, ABACthem.Hierarchy)
+    result_h = run(Enum.take_every(500..2000, 500), [50, 100])
+    tests = Map.put(tests, :result_h, result_h)
     # run([0, 5, 10], [5, 10])
     IO.puts("==== Hierarchy test OK. ==== \n\n\n")
 

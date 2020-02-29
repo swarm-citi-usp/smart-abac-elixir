@@ -3,7 +3,8 @@ defmodule ABACthem.Application do
 
   def start(_type, _args) do
     children = [
-      {ABACthem.Store, []}
+      {ABACthem.Store, []},
+      ABACthem.Hierarchy
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)
