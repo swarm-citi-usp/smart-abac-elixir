@@ -109,10 +109,11 @@ defmodule ABACthem.Policy do
 
   alias ABACthem.Attr
 
-  defstruct id: nil, name: "", user_attrs: [], operations: [], object_attrs: [], context_attrs: []
+  defstruct id: nil, version: "1.0", name: "", user_attrs: [], operations: [], object_attrs: [], context_attrs: []
 
   @type t :: %__MODULE__{
           id: String.t(),
+          version: String.t(),
           name: String.t(),
           user_attrs: [Attr.t()],
           operations: [String.t()],
