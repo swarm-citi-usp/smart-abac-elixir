@@ -1,19 +1,27 @@
 defmodule ABACthem.Types do
   require Logger
 
-  def infer_type(attr) when is_map(attr) do
-    [{name, value}] = Map.to_list(attr)
-    infer_type(name, value)
+  def infer_type(attr \\ %{}, recursive \\ false)
+
+  def infer_type(attr, recursive) when is_map(attr) do
+    attr
+    |> Enum.map(fn {name, value} -> do_infer_type(name, value, recursive) end)
   end
 
-  def infer_type(name, value) do
+  def infer_type({name, value}, recursive), do: do_infer_type(name, value, recursive)
+
+  def do_infer_type(name, value, recursive) do
     dt = get_type(value)
     case dt do
       "range" ->
         value = Enum.map(value, fn {k, v} -> {String.to_atom(k), v} end) |> Enum.into(%{})
         %{data_type: dt, name: name, value: value}
       "object" ->
-        %{data_type: dt, name: name, value: infer_type(value)}
+        if recursive do
+          %{data_type: dt, name: name, value: infer_type(value)}
+        else
+          %{data_type: dt, name: name, value: value}
+        end
       _ ->
         %{data_type: dt, name: name, value: value}
     end
