@@ -8,11 +8,14 @@ defmodule ABACthem.Types do
 
   def infer_type(name, value) do
     dt = get_type(value)
-    if dt == "range" do
-      value = Enum.map(value, fn {k, v} -> {String.to_atom(k), v} end) |> Enum.into(%{})
-      %{data_type: dt, name: name, value: value}
-    else
-      %{data_type: dt, name: name, value: value}
+    case dt do
+      "range" ->
+        value = Enum.map(value, fn {k, v} -> {String.to_atom(k), v} end) |> Enum.into(%{})
+        %{data_type: dt, name: name, value: value}
+      "object" ->
+        %{data_type: dt, name: name, value: infer_type(value)}
+      _ ->
+        %{data_type: dt, name: name, value: value}
     end
   end
 
