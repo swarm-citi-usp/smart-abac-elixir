@@ -3,6 +3,7 @@ defmodule ABACthem.StoreTest do
   doctest ABACthem
   alias ABACthem.{PDP, Attr, Policy, Request, Store}
 
+  @tag :skip
   test "store and retrieve policy, and evaluate against request (no hierarchy)" do
     %Policy{
       id: "1",

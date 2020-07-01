@@ -7,9 +7,13 @@ defmodule ABACthem.MixProject do
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env)
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
+  defp elixirc_paths(_), do: ["lib", "web"]
 
   # Run "mix help compile.app" to learn about applications.
   def application do
@@ -22,6 +26,9 @@ defmodule ABACthem.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ecto, "~> 3.3"},
+      {:ex_machina, "~> 2.4", only: :test},
+      {:tzdata, "~> 1.0.1"},
       {:decorator, "~> 1.2"},
       {:poison, "~> 3.1"},
       {:tesla, "~> 1.2.1"}
