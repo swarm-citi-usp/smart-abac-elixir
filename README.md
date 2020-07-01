@@ -1,30 +1,10 @@
 # ABAC-them
 
-This is a new Attribute-Based Access Control (ABAC) model.
-
-It is named after the initial of its features:
-
-- Typed: attributes have types
-- Hierarchical: attributes can have hierarchies
-- Enumerated: policies are created by enumerating accepted values
-- Multi-Attribute: each policy container can have more than one attribute
-
-## Installation
-
-Add to `mix.exs` file:
-
-```
-  defp deps do
-    [
-      # ...
-      {:abac_them, "git@github.com:swarm-citi-usp/abac-them-elixir.git"}
-    ]
-  end
-```
+This repo implements a novel Attribute-Based Access Control (ABAC) model that is intended to be run within IoT devices to protect their interactions.
 
 # Example
 
-Consider a smart-home use case, with the restriction _any security appliance can be accessed and modified by any adult family member_.
+Consider a smart-home use case, with the restriction _any security camera can be accessed and modified by any adult family member_.
 
 The following code section creates an ABAC-them policy that represents this restriction, and runs some requests against it.
 
@@ -56,6 +36,41 @@ The following code section creates an ABAC-them policy that represents this rest
   "operations" => ["read"],
 } |> ABACthem.authorize()
 ```
+
+# Installation
+
+Add to your `mix.exs` file:
+
+```
+  defp deps do
+    [
+      # ...
+      {:abac_them, "git@github.com:swarm-citi-usp/abac-them-elixir.git"}
+    ]
+  end
+```
+
+# Details
+
+## The `them` acronym
+The model is named after its main features:
+
+- Typed: attributes have types
+- Hierarchical: attribute values can have hierarchies
+- Enumerated: policies are created by enumerating accepted values
+- Multi-Attribute: each policy container can have more than one attribute
+
+## Motivation
+
+This model exists because existing models are either:
+
+- Too complex, e.g.:
+  - XACML uses XML and is bloated
+  - HGABAC uses a concise logic language, but requires advanced parsers and can be NP-complete to review
+- Too restrictive, e.g.:
+  - RBAC only supports roles
+  - EAP-ABACm,n does not support types nor hierarchies
+  - Policy Machine does not support types nor conjunctive policies
 
 # Contributing
 
