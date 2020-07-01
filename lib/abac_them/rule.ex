@@ -9,9 +9,9 @@ defmodule ABACthem.Rule do
 
   @primary_key false
   embedded_schema do
-    field(:subject, :map)
-    field(:object, :map)
-    field(:context, :map)
+    field(:subject, :map, default: %{})
+    field(:object, :map, default: %{})
+    field(:context, :map, default: %{})
     field(:operations, {:array, :string})
   end
 
