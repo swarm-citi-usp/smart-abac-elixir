@@ -2,6 +2,8 @@ defmodule PerfTest do
   use ExUnit.Case
   alias ABACthem.{PDP, Attr, Policy, Request}
 
+  # TODO: refactor this file to reflect the V2 modules
+
   @moduledoc """
   Some performance tests.
   """

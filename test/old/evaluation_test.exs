@@ -1,77 +1,51 @@
 defmodule EvaluationTest do
   use ExUnit.Case
-  alias ABACthem.{Attr, Policy}
+  alias ABACthem.{Rule}
 
   @moduledoc """
   This module is mainly used for experimenting with policies to put in the
-  ABAC-them article that I've written.
+  ABAC-them article.
   """
 
-  test "representing PM" do
+  test "representing the Policy Machine" do
     _policies = [
-      %Policy{
-        user_attrs: [
-          %Attr{data_type: "string", name: "Group", value: "Group1"}
-        ],
+      %Rule{
+        subject: %{"Group" => "Group1"},
         operations: ["write"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Project", value: "Project1"}
-        ]
+        object: %{"Project" => "Project1"},
       },
-      %Policy{
-        user_attrs: [
-          %Attr{data_type: "string", name: "Group", value: "Group2"}
-        ],
+      %Rule{
+        subject: %{"Group" => "Group2"},
         operations: ["write"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Project", value: "Project2"}
-        ]
+        object: %{"Project" => "Project2"},
       },
-      %Policy{
-        user_attrs: [
-          %Attr{data_type: "string", name: "Group", value: "Group2"}
-        ],
+      %Rule{
+        subject: %{"Group" => "Group2"},
         operations: ["read", "write"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Project", value: "Gr2-Secret"}
-        ]
+        object: %{"Project" => "Gr2-Secret"},
       },
-      %Policy{
-        user_attrs: [
-          %Attr{data_type: "string", name: "Group", value: "Division"}
-        ],
+      %Rule{
+        subject: %{"Group" => "Division"},
         operations: ["read"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Project", value: "Projects"}
-        ]
+        object: %{"Project" => "Projects"},
       }
     ]
 
     # |> PolicyInspect.inspect()
   end
 
-  describe "representing HGABABACthem" do
+  describe "representing HGABAC" do
     test "case 1" do
       [
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Undergrad"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Undergrad"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Book"},
-            %Attr{data_type: "string", name: "Restricted", value: "False"}
-          ]
+          object: %{"Type" => "Book", "Restricted" => "False"}
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Undergrad"},
-            %Attr{data_type: "string", name: "EnrolledInCourse", value: "CS101"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Undergrad", "EnrolledInCourse" => "CS101"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Course", value: "CS101"}
-          ]
+          object: %{"Course" => "CS101"},
         }
       ]
 
@@ -80,24 +54,15 @@ defmodule EvaluationTest do
 
     test "case 2" do
       [
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Gradstudent"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Gradstudent"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Periodical"}
-          ]
+          object: %{"Type" => "Periodical"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Gradstudent"},
-            %Attr{data_type: "string", name: "TeachingAssistant", value: "CS101"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Gradstudent", "TeachingAssistant" => "CS101"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Course", value: "CS101"}
-          ]
+          object: %{"Course" => "CS101"},
         }
       ]
 
@@ -106,106 +71,64 @@ defmodule EvaluationTest do
 
     test "case 3" do
       [
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Faculty"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Faculty"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Book"}
-          ]
+          object: %{"Type" => "Book"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Faculty"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Faculty"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Periodical"}
-          ]
+          object: %{"Type" => "Periodical"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Faculty"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Faculty"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "CourseMaterial"}
-          ]
+          object: %{"Type" => "CourseMaterial"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Faculty"},
-            %Attr{data_type: "string", name: "Department", value: "ComputerScience"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Faculty", "Department" => "ComputerScience"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "ArchivedRecords"},
-            %Attr{data_type: "string", name: "Department", value: "ComputerScience"}
-          ]
+          object: %{"Type" => "ArchivedRecords", "Department" => "ComputerScience"}
         }
       ]
     end
 
     test "case 4" do
       [
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Staff"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Staff"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "*"}
-          ],
-          context_attrs: [
-            %Attr{data_type: "time_interval", name: "DateTime", value: "* * 8-17 * * *"},
-            %Attr{data_type: "range", name: "Weekday", value: %{min: 1, max: 5}}
-          ]
+          object: %{"Type" => "*"},
+          context: %{"DateTime" => "* * 8-17 * * *", "Weekday" => %{min: 1, max: 5}}
         }
       ]
     end
 
     test "case 5" do
       [
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Undergrad"},
-            %Attr{data_type: "string", name: "EnrolledInCourse", value: "ComputerScience"}
-          ],
+        %Rule{
+          subject: %{"Type" => "Undergrad", "EnrolledInCourse" => "ComputerScience"},
           operations: ["check_out_book"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "Periodicals"}
-          ],
-          context_attrs: [
-            %Attr{data_type: "ip_range", name: "UserIpAddress", value: "192.168.*.*"}
-          ]
+          object: %{"Type" => "Periodicals"},
+          context: %{"UserIpAddress" => "192.168.*.*"},
         }
       ]
     end
   end
 
   @tag :skip
-  test "HGABABACthem case 1 >> modified with 'variable'" do
+  test "HGABAC case 1 >> modified with 'variable'" do
     _policies = [
-      %Policy{
-        user_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "Undergrad"}
-        ],
+      %Rule{
+        subject: %{"Type" => "Undergrad"},
         operations: ["check_out_book"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "Book"},
-          %Attr{data_type: "string", name: "Restricted", value: "False"}
-        ]
+        object: %{"Type" => "Book", "Restricted" => "False"}
       },
-      %Policy{
-        user_attrs: [
-          %Attr{data_type: "string", name: "Type", value: "Undergrad"},
-          %Attr{data_type: "string", name: "EnrolledInCourse", value: "$course"}
-        ],
+      %Rule{
+        subject: %{"Type" => "Undergrad", "EnrolledInCourse" => "$course"},
         operations: ["check_out_book"],
-        object_attrs: [
-          %Attr{data_type: "string", name: "Course", value: "$course"}
-        ]
+        object: %{"Course" => "$course"},
       }
     ]
   end
@@ -213,94 +136,53 @@ defmodule EvaluationTest do
   describe "Swarm scenarios" do
     test "selling services, using reputation, and admin policies" do
       _policies = [
-        %Policy{
-          id: "0",
-          user_attrs: [
-            %Attr{data_type: "string", name: "Role", value: "AdultFamilyMember"}
-          ],
+        %Rule{
+          subject: %{"Role" => "AdultFamilyMember"},
           operations: ["read", "update"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "SecurityAppliance"}
-          ]
+          object: %{"Type" => "SecurityAppliance"},
         },
-        %Policy{
-          id: "1",
-          user_attrs: [
-            %Attr{data_type: "range", name: "Reputation", value: %{min: 4}}
-          ],
+        %Rule{
+          subject: %{"Reputation" => %{min: 4}},
           operations: ["buy"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "SecurityCamera"},
-            %Attr{data_type: "string", name: "Location", value: "Outdoor"}
-          ],
-          context_attrs: [
-            %Attr{data_type: "time_interval", name: "DateTime", value: "* * 8-18 * * *"}
-          ]
+          object: %{"Type" => "SecurityCamera", "Location" => "Outdoor"},
+          context: %{"DateTime" => "* * 8-18 * * *"},
         },
-        %Policy{
-          id: "2",
-          user_attrs: [
-            %Attr{data_type: "string", name: "Id", value: "8a5...934"}
-          ],
+        %Rule{
+          subject: %{"Id" => "8a5...934"},
           operations: ["read"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Id", value: "e35...85a"},
-            %Attr{data_type: "string", name: "Type", value: "SecurityCamera"}
-          ],
-          context_attrs: [
-            %Attr{data_type: "time_interval", name: "DateTime", value: "10 20-25 12 6 6 2019"}
-          ]
+          object: %{"Id" => "e35...85a", "Type" => "SecurityCamera"},
+          context: %{"DateTime" => "10 20-25 12 6 6 2019"},
         }
       ]
       # |> PolicyInspect.inspect()
 
       _admin_policies = [
         # based on general attributes
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "range", name: "Role", value: "Admin"}
-          ],
+        %Rule{
+          subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Role", value: "Researcher"}
-          ]
+          object: %{"Role" => "Researcher"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "range", name: "Role", value: "Admin"}
-          ],
+        %Rule{
+          subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Type", value: "SecurityCamera"}
-          ]
+          object: %{"Type" => "SecurityCamera"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "range", name: "Role", value: "Admin"}
-          ],
+        %Rule{
+          subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object_attrs: [
-            %Attr{data_type: "range", name: "Reputation", value: %{min: 4}}
-          ]
+          object: %{"Reputation" => %{min: 4}}
         },
-        # or based on policy id
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "range", name: "Role", value: "Admin"}
-          ],
+        # or based on Rule id
+        %Rule{
+          subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Id", value: "1"}
-          ]
+          object: %{"Id" => "1"},
         },
-        %Policy{
-          user_attrs: [
-            %Attr{data_type: "range", name: "Role", value: "Admin"}
-          ],
+        %Rule{
+          subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object_attrs: [
-            %Attr{data_type: "string", name: "Id", value: "2"}
-          ]
+          object: %{"Id" => "2"},
         }
       ]
     end
