@@ -1,4 +1,4 @@
-defmodule ABACthemV2Test do
+defmodule ABACthemTest do
   use ExUnit.Case
   import ABACthem.Factory
   alias ABACthem.{Hierarchy, Serialization}

@@ -18,16 +18,19 @@ defmodule ABACthem.Types do
 
   def do_infer_type(name, value, recursive) do
     dt = get_type(value)
+
     case dt do
       "range" ->
         value = Enum.map(value, fn {k, v} -> {String.to_atom(k), v} end) |> Enum.into(%{})
         %Attr{data_type: dt, name: name, value: value}
+
       "object" ->
         if recursive do
           %Attr{data_type: dt, name: name, value: infer_type(value)}
         else
           %Attr{data_type: dt, name: name, value: value}
         end
+
       _ ->
         %Attr{data_type: dt, name: name, value: value}
     end
@@ -35,9 +38,11 @@ defmodule ABACthem.Types do
 
   def get_type(value) when is_number(value), do: "number"
   def get_type(value) when is_binary(value), do: "string"
+
   def get_type(value) when is_map(value) do
     keys = Map.keys(value)
     rest = ["min", "max"] -- keys
+
     if length(rest) < 2 do
       "range"
     else

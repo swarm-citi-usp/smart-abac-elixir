@@ -4,12 +4,15 @@ defmodule ABACthem.Hierarchy do
   def start_link(_args \\ []) do
     Logger.info("Opening ABAC hierarchy...")
 
-    Agent.start_link(fn ->
-      Application.get_env(:abac_them, :hierarchy_file)
-      |> open()
-      |> parse()
-      |> to_adjacency_list()
-    end, name: __MODULE__)
+    Agent.start_link(
+      fn ->
+        Application.get_env(:abac_them, :hierarchy_file)
+        |> open()
+        |> parse()
+        |> to_adjacency_list()
+      end,
+      name: __MODULE__
+    )
   end
 
   def child_spec(arg) do

@@ -1,4 +1,4 @@
-defmodule PolicyTest do
+defmodule ModelsTest do
   use ExUnit.Case
   doctest ABACthem
   import ABACthem.Factory

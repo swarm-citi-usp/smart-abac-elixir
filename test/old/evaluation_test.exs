@@ -12,22 +12,22 @@ defmodule EvaluationTest do
       %Rule{
         subject: %{"Group" => "Group1"},
         operations: ["write"],
-        object: %{"Project" => "Project1"},
+        object: %{"Project" => "Project1"}
       },
       %Rule{
         subject: %{"Group" => "Group2"},
         operations: ["write"],
-        object: %{"Project" => "Project2"},
+        object: %{"Project" => "Project2"}
       },
       %Rule{
         subject: %{"Group" => "Group2"},
         operations: ["read", "write"],
-        object: %{"Project" => "Gr2-Secret"},
+        object: %{"Project" => "Gr2-Secret"}
       },
       %Rule{
         subject: %{"Group" => "Division"},
         operations: ["read"],
-        object: %{"Project" => "Projects"},
+        object: %{"Project" => "Projects"}
       }
     ]
 
@@ -45,7 +45,7 @@ defmodule EvaluationTest do
         %Rule{
           subject: %{"Type" => "Undergrad", "EnrolledInCourse" => "CS101"},
           operations: ["check_out_book"],
-          object: %{"Course" => "CS101"},
+          object: %{"Course" => "CS101"}
         }
       ]
 
@@ -57,12 +57,12 @@ defmodule EvaluationTest do
         %Rule{
           subject: %{"Type" => "Gradstudent"},
           operations: ["check_out_book"],
-          object: %{"Type" => "Periodical"},
+          object: %{"Type" => "Periodical"}
         },
         %Rule{
           subject: %{"Type" => "Gradstudent", "TeachingAssistant" => "CS101"},
           operations: ["check_out_book"],
-          object: %{"Course" => "CS101"},
+          object: %{"Course" => "CS101"}
         }
       ]
 
@@ -74,17 +74,17 @@ defmodule EvaluationTest do
         %Rule{
           subject: %{"Type" => "Faculty"},
           operations: ["check_out_book"],
-          object: %{"Type" => "Book"},
+          object: %{"Type" => "Book"}
         },
         %Rule{
           subject: %{"Type" => "Faculty"},
           operations: ["check_out_book"],
-          object: %{"Type" => "Periodical"},
+          object: %{"Type" => "Periodical"}
         },
         %Rule{
           subject: %{"Type" => "Faculty"},
           operations: ["check_out_book"],
-          object: %{"Type" => "CourseMaterial"},
+          object: %{"Type" => "CourseMaterial"}
         },
         %Rule{
           subject: %{"Type" => "Faculty", "Department" => "ComputerScience"},
@@ -111,7 +111,7 @@ defmodule EvaluationTest do
           subject: %{"Type" => "Undergrad", "EnrolledInCourse" => "ComputerScience"},
           operations: ["check_out_book"],
           object: %{"Type" => "Periodicals"},
-          context: %{"UserIpAddress" => "192.168.*.*"},
+          context: %{"UserIpAddress" => "192.168.*.*"}
         }
       ]
     end
@@ -128,7 +128,7 @@ defmodule EvaluationTest do
       %Rule{
         subject: %{"Type" => "Undergrad", "EnrolledInCourse" => "$course"},
         operations: ["check_out_book"],
-        object: %{"Course" => "$course"},
+        object: %{"Course" => "$course"}
       }
     ]
   end
@@ -139,21 +139,22 @@ defmodule EvaluationTest do
         %Rule{
           subject: %{"Role" => "AdultFamilyMember"},
           operations: ["read", "update"],
-          object: %{"Type" => "SecurityAppliance"},
+          object: %{"Type" => "SecurityAppliance"}
         },
         %Rule{
           subject: %{"Reputation" => %{min: 4}},
           operations: ["buy"],
           object: %{"Type" => "SecurityCamera", "Location" => "Outdoor"},
-          context: %{"DateTime" => "* * 8-18 * * *"},
+          context: %{"DateTime" => "* * 8-18 * * *"}
         },
         %Rule{
           subject: %{"Id" => "8a5...934"},
           operations: ["read"],
           object: %{"Id" => "e35...85a", "Type" => "SecurityCamera"},
-          context: %{"DateTime" => "10 20-25 12 6 6 2019"},
+          context: %{"DateTime" => "10 20-25 12 6 6 2019"}
         }
       ]
+
       # |> PolicyInspect.inspect()
 
       _admin_policies = [
@@ -161,12 +162,12 @@ defmodule EvaluationTest do
         %Rule{
           subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object: %{"Role" => "Researcher"},
+          object: %{"Role" => "Researcher"}
         },
         %Rule{
           subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object: %{"Type" => "SecurityCamera"},
+          object: %{"Type" => "SecurityCamera"}
         },
         %Rule{
           subject: %{"Role" => "Admin"},
@@ -177,12 +178,12 @@ defmodule EvaluationTest do
         %Rule{
           subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object: %{"Id" => "1"},
+          object: %{"Id" => "1"}
         },
         %Rule{
           subject: %{"Role" => "Admin"},
           operations: ["read", "update"],
-          object: %{"Id" => "2"},
+          object: %{"Id" => "2"}
         }
       ]
     end

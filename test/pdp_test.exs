@@ -16,18 +16,28 @@ defmodule PDPTest do
     test "authorize, policy with nested object" do
       {:ok, new_policy} =
         params_for(:policy)
-        |> put_in([:privileges, :object], %{"type" => "camera", "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}})
+        |> put_in([:privileges, :object], %{
+          "type" => "camera",
+          "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}
+        })
         |> put_in([:privileges, :context], %{})
         |> ABACthem.create_policy()
 
       {:ok, request} =
         params_for(:request)
-        |> put_in([:object], %{"type" => "camera", "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}})
+        |> put_in([:object], %{
+          "type" => "camera",
+          "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}
+        })
         |> ABACthem.build_request()
 
       assert PDP.authorize(request, [new_policy])
 
-      request = %{request | object: %{"owner" => "camera", "geolocation" => %{"street" => "Rua dos Bobos"}}}
+      request = %{
+        request
+        | object: %{"owner" => "camera", "geolocation" => %{"street" => "Rua dos Bobos"}}
+      }
+
       refute PDP.authorize(request, [new_policy])
     end
   end
@@ -81,13 +91,17 @@ defmodule PDPTest do
     end
 
     test "attribute name must be string, not atom" do
-      assert PDP.match_attr("string",
-        {"swarm:Type", "swarm:SecurityCamera"},
-        %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"})
+      assert PDP.match_attr(
+               "string",
+               {"swarm:Type", "swarm:SecurityCamera"},
+               %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"}
+             )
 
-      refute PDP.match_attr("string",
-        {:"swarm:Type", "swarm:SecurityCamera"},
-        %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"})
+      refute PDP.match_attr(
+               "string",
+               {:"swarm:Type", "swarm:SecurityCamera"},
+               %{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"}
+             )
     end
   end
 end

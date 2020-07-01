@@ -8,9 +8,9 @@ defmodule ABACthem do
     policies = list_policies()
 
     request
-      |> Request.expand_attrs()
-      |> Request.add_date_time()
-      |> PDP.authorize(policies)
+    |> Request.expand_attrs()
+    |> Request.add_date_time()
+    |> PDP.authorize(policies)
   end
 
   def list_policies do

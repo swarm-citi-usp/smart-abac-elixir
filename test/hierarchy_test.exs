@@ -16,10 +16,10 @@ defmodule HierarchyTest do
              Hierarchy.expand_attr("swarm:FamilyMember") |> Enum.sort()
 
     assert [
-      "swarm:Appliance",
-      "swarm:SecurityAppliance",
-      "swarm:SecurityCamera",
-    ] == Hierarchy.expand_attr("swarm:SecurityCamera") |> Enum.sort()
+             "swarm:Appliance",
+             "swarm:SecurityAppliance",
+             "swarm:SecurityCamera"
+           ] == Hierarchy.expand_attr("swarm:SecurityCamera") |> Enum.sort()
   end
 
   test "run bfs" do

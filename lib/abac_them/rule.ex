@@ -9,10 +9,10 @@ defmodule ABACthem.Rule do
 
   @primary_key false
   embedded_schema do
-    field :subject, :map
-    field :object, :map
-    field :context, :map
-    field :operations, {:array, :string}
+    field(:subject, :map)
+    field(:object, :map)
+    field(:context, :map)
+    field(:operations, {:array, :string})
   end
 
   def changeset(params) do

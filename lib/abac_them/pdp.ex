@@ -8,7 +8,8 @@ defmodule ABACthem.PDP do
   def authorize(request, policies) do
     policies
     |> Enum.any?(fn policy ->
-      match_rules(request, policy.privileges) #&& !match_rules(request, policy.prohibitions)
+      # && !match_rules(request, policy.prohibitions)
+      match_rules(request, policy.privileges)
     end)
   end
 
@@ -26,6 +27,7 @@ defmodule ABACthem.PDP do
   Tests whether the request attributes are allowed by a policy.
   """
   Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
+
   def match_attrs(request_attrs, policy_attrs) do
     policy_attrs
     |> Enum.all?(fn policy_attr ->
@@ -93,8 +95,6 @@ defmodule ABACthem.PDP do
 
   @doc """
   Tests whether the request operations are allowed by a policy.
-
-  Returns true when the set `request_ops` is a subset of `policy_ops`.
   """
   Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
   def match_operations([], _policy_ops), do: false

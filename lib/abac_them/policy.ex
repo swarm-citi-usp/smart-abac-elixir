@@ -13,10 +13,10 @@ defmodule ABACthem.Policy do
 
   @primary_key false
   embedded_schema do
-    field :id, :string
-    field :version, :string, default: "2.0"
-    field :name
-    embeds_one :privileges, Rule
+    field(:id, :string)
+    field(:version, :string, default: "2.0")
+    field(:name)
+    embeds_one(:privileges, Rule)
   end
 
   def changeset(params) do

@@ -11,7 +11,7 @@ defmodule ABACthem.Factory do
         subject: %{"id" => "alice"},
         object: %{"owner" => "alice"},
         context: %{"dateTime" => %{"year" => 2020}},
-        operations: ["create"],
+        operations: ["create"]
       }
     }
   end
@@ -21,7 +21,7 @@ defmodule ABACthem.Factory do
       subject: %{"id" => "alice"},
       object: %{"owner" => "alice"},
       context: %{"dateTime" => %{"year" => 2020}},
-      operations: ["create"],
+      operations: ["create"]
     }
   end
 end
