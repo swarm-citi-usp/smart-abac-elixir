@@ -1,4 +1,4 @@
-defmodule ABACthem.PolicyV2 do
+defmodule ABACthem.Policy do
   @moduledoc """
   Specifies a Policy model for access control in the Swarm.
 

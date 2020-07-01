@@ -2,15 +2,15 @@ defmodule ABACthem do
   @moduledoc """
   Documentation for ABACthem.
   """
-  alias ABACthem.{PolicyV2, RequestV2, Store, PDPv2}
+  alias ABACthem.{Policy, Request, Store, PDP}
 
   def authorize(request) do
     policies = list_policies()
 
     request
-      |> RequestV2.expand_attrs()
-      |> RequestV2.add_date_time()
-      |> PDPv2.authorize(policies)
+      |> Request.expand_attrs()
+      |> Request.add_date_time()
+      |> PDP.authorize(policies)
   end
 
   def list_policies do
@@ -36,7 +36,7 @@ defmodule ABACthem do
   end
 
   def build_policy(policy_attrs) do
-    with changeset = %{valid?: true} <- PolicyV2.changeset(policy_attrs) do
+    with changeset = %{valid?: true} <- Policy.changeset(policy_attrs) do
       {:ok, Ecto.Changeset.apply_changes(changeset)}
     else
       error ->
@@ -45,7 +45,7 @@ defmodule ABACthem do
   end
 
   def build_request(request_attrs) do
-    with changeset = %{valid?: true} <- RequestV2.changeset(request_attrs) do
+    with changeset = %{valid?: true} <- Request.changeset(request_attrs) do
       {:ok, Ecto.Changeset.apply_changes(changeset)}
     else
       error ->

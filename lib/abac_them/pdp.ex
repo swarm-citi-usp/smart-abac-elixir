@@ -1,4 +1,4 @@
-defmodule ABACthem.PDPv2 do
+defmodule ABACthem.PDP do
   use ABACthem.LogDecorator
   alias ABACthem.Types
 

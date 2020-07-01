@@ -1,10 +1,10 @@
 defmodule ABACthem.Factory do
   # without Ecto
   use ExMachina.Ecto
-  alias ABACthem.{PolicyV2, RequestV2}
+  alias ABACthem.{Policy, Request}
 
   def policy_factory do
-    %PolicyV2{
+    %Policy{
       id: "123",
       name: "test policy",
       privileges: %{
@@ -17,7 +17,7 @@ defmodule ABACthem.Factory do
   end
 
   def request_factory do
-    %RequestV2{
+    %Request{
       subject: %{"id" => "alice"},
       object: %{"owner" => "alice"},
       context: %{"dateTime" => %{"year" => 2020}},

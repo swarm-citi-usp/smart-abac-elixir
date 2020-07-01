@@ -1,6 +1,6 @@
-defmodule ABACthem.RequestV2 do
+defmodule ABACthem.Request do
   @moduledoc """
-  Specifies a RequestV2.
+  Specifies a Request.
   """
   use Ecto.Schema
   import Ecto.Changeset
