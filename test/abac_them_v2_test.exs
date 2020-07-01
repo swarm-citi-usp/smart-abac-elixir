@@ -13,7 +13,7 @@ defmodule ABACthemV2Test do
     {:ok, _policy} = params_for(:policy) |> ABACthem.create_policy()
     {:ok, request} = params_for(:request) |> ABACthem.build_request()
 
-    assert ABACthem.authorize_v2(request)
+    assert ABACthem.authorize(request)
   end
 
   test "authorize based on hierarchy" do
@@ -29,7 +29,7 @@ defmodule ABACthemV2Test do
       |> put_in([:subject], %{"role" => "swarm:Mother"})
       |> ABACthem.build_request()
 
-    assert ABACthem.authorize_v2(request)
+    assert ABACthem.authorize(request)
   end
 
   test "json serialization" do

@@ -8,15 +8,6 @@ defmodule ABACthem do
     policies = list_policies()
 
     request
-      |> ABACthem.Request.expand_attrs()
-      |> ABACthem.Request.add_date_time_attr()
-      |> ABACthem.PDP.authorize(policies)
-  end
-
-  def authorize_v2(request) do
-    policies = list_policies()
-
-    request
       |> RequestV2.expand_attrs()
       |> RequestV2.add_date_time()
       |> PDPv2.authorize(policies)

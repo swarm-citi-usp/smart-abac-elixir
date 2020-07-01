@@ -1,6 +1,12 @@
 defmodule ABACthem.Types do
   require Logger
 
+  defmodule Attr do
+    defstruct data_type: "string", name: "", value: ""
+  end
+
+  alias ABACthem.Types.Attr
+
   def infer_type(attr \\ %{}, recursive \\ false)
 
   def infer_type(attr, recursive) when is_map(attr) do
@@ -15,15 +21,15 @@ defmodule ABACthem.Types do
     case dt do
       "range" ->
         value = Enum.map(value, fn {k, v} -> {String.to_atom(k), v} end) |> Enum.into(%{})
-        %{data_type: dt, name: name, value: value}
+        %Attr{data_type: dt, name: name, value: value}
       "object" ->
         if recursive do
-          %{data_type: dt, name: name, value: infer_type(value)}
+          %Attr{data_type: dt, name: name, value: infer_type(value)}
         else
-          %{data_type: dt, name: name, value: value}
+          %Attr{data_type: dt, name: name, value: value}
         end
       _ ->
-        %{data_type: dt, name: name, value: value}
+        %Attr{data_type: dt, name: name, value: value}
     end
   end
 
