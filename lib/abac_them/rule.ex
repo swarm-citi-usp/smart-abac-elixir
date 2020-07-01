@@ -5,6 +5,8 @@ defmodule ABACthem.Rule do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:subject, :object, :context, :operations]}
+
   @primary_key false
   embedded_schema do
     field :subject, :map

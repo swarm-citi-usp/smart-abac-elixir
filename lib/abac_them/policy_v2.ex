@@ -9,7 +9,7 @@ defmodule ABACthem.PolicyV2 do
   import Ecto.Changeset
   alias ABACthem.Rule
 
-  @derive {Jason.Encoder, only: [:id, :version, :name]}
+  @derive {Jason.Encoder, only: [:id, :version, :name, :privileges]}
 
   @primary_key false
   embedded_schema do

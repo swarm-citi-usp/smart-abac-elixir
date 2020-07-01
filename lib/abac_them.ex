@@ -27,8 +27,7 @@ defmodule ABACthem do
   end
 
   def create_policy(policy_attrs) do
-    with changeset = %{valid?: true} <- PolicyV2.changeset(policy_attrs),
-         policy <- Ecto.Changeset.apply_changes(changeset),
+    with {:ok, policy} <- build_policy(policy_attrs),
          :ok <- Store.update(policy) do
       {:ok, policy}
     else
@@ -43,6 +42,15 @@ defmodule ABACthem do
 
   def delete_policy(id) do
     Store.delete(id)
+  end
+
+  def build_policy(policy_attrs) do
+    with changeset = %{valid?: true} <- PolicyV2.changeset(policy_attrs) do
+      {:ok, Ecto.Changeset.apply_changes(changeset)}
+    else
+      error ->
+        error
+    end
   end
 
   def build_request(request_attrs) do

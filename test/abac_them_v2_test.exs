@@ -1,7 +1,7 @@
 defmodule ABACthemV2Test do
   use ExUnit.Case
   import ABACthem.Factory
-  alias ABACthem.{Hierarchy}
+  alias ABACthem.{Hierarchy, Serialization}
 
   setup do
     ABACthem.Store.reset()
@@ -30,5 +30,14 @@ defmodule ABACthemV2Test do
       |> ABACthem.build_request()
 
     assert ABACthem.authorize_v2(request)
+  end
+
+  test "json serialization" do
+    {:ok, policy} = params_for(:policy) |> ABACthem.build_policy()
+
+    {:ok, policy_json} = Serialization.to_json(policy)
+    assert is_binary(policy_json)
+
+    assert {:ok, ^policy} = Serialization.from_json(policy_json)
   end
 end
