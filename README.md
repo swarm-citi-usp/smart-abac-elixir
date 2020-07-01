@@ -40,23 +40,15 @@ alias ABACthem.{PDP, Attr, Policy, Request, Store}
 
 %Policy{
   id: "0",
-  user_attrs: [
-    %Attr{data_type: "string", name: "swarm:Role", value: "swarm:AdultFamilyMember"}
-  ],
+  subject: %{"swarm:Role" => "swarm:AdultFamilyMember"},
   operations: ["read", "update"],
-  object_attrs: [
-    %Attr{data_type: "string", name: "swarm:Type", value: "swarm:SecurityAppliance"}
-  ]
+  object: %{"swarm:Type" => "swarm:SecurityAppliance"}
 } |> Store.update()
 
 
 request = %Request{
-  user_attrs: %{
-    "swarm:Role" => "swarm:Father"
-  },
-  object_attrs: %{
-    "swarm:Type" => "swarm:SecurityCamera"
-  },
+  subject: %{"swarm:Role" => "swarm:Father"},
+  object: %{"swarm:Type" => "swarm:SecurityCamera"},
   operations: ["read"]
 }
 
@@ -67,25 +59,21 @@ ABACthem.authorize(request) # true
 ```
 %Policy{
   id: "1",
-  user_attrs: [
-    %Attr{data_type: "range", name: "swarm:Reputation", value: %{min: 4}}
-  ],
+  subject: %{"swarm:Reputation" => %{min: 4}},
   operations: ["buy"],
-  object_attrs: [
-    %Attr{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"},
-    %Attr{data_type: "string", name: "swarm:Location", value: "swarm:Outdoor"}
-  ],
-  context_attrs: [
-    %Attr{data_type: "time_interval", name: "swarm:DateTime", value: "* * 8-18 * * *"}
-  ]
+  object: {
+    "swarm:Type" => "swarm:SecurityCamera",
+    "swarm:Location" => "swarm:Outdoor"
+  },
+  context_attrs: %{"hour" => %{"min": 8, "max": 18}}
 } |> Store.update()
 
 request = %Request{
-  user_attrs: %{
+  subject: %{
     "swarm:Id" => "swarm:r03...bh8",
     "swarm:Reputation" => 4.23
   },
-  object_attrs: %{
+  object: %{
     "swarm:Type" => "swarm:SecurityCamera",
     "swarm:Location" => "swarm:Sidewalk"
   },
@@ -99,25 +87,29 @@ ABACthem.authorize(request) # true
 ```
 %Policy{
   id: "2",
-  user_attrs: [
-    %Attr{data_type: "string", name: "swarm:Id", value: "swarm:8a5...934"}
-  ],
+  subject: {"swarm:Id" => "swarm:8a5...934"},
   operations: ["read"],
-  object_attrs: [
-    %Attr{data_type: "string", name: "swarm:Id", value: "swarm:e35...85a"},
-    %Attr{data_type: "string", name: "swarm:Type", value: "swarm:SecurityCamera"}
-  ],
-  context_attrs: [
-    # ADJUST the date and time below to test this!
-    %Attr{data_type: "time_interval", name: "swarm:DateTime", value: "0-60 1-10 21 21 8 2019"}
-  ]
+  object: {
+    "swarm:Id" => "swarm:e35...85a",
+    "swarm:Type" => "swarm:SecurityCamera"
+  },
+  context_attrs: %{
+    "dateTime" => %{                                          
+      "day" => 30,
+      "hour" => 23,
+      "minute" => %{"min" => 40, "max" => 50},
+      "month" => 6,
+      "timeZone" => "America/Sao_Paulo",
+      "year" => 2020
+    }
+  }
 } |> Store.update()
 
 request = %Request{
-  user_attrs: %{
+  subject: %{
     "swarm:Id" => "swarm:8a5...934",
   },
-  object_attrs: %{
+  object: %{
     "swarm:Id" => "swarm:e35...85a",
     "swarm:Type" => "swarm:SecurityCamera"
   },

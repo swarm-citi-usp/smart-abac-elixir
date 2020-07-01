@@ -29,6 +29,7 @@ defmodule ABACthem.MixProject do
       {:ecto, "~> 3.3"},
       {:ex_machina, "~> 2.4", only: :test},
       {:tzdata, "~> 1.0.1"},
+      {:jason, "~> 1.2"},
       {:decorator, "~> 1.2"},
       {:poison, "~> 3.1"},
       {:tesla, "~> 1.2.1"}

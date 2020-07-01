@@ -1,7 +1,7 @@
 defmodule PDPv2Test do
   use ExUnit.Case
   import ABACthem.Factory
-  alias ABACthem.{Serialization, PDPv2}
+  alias ABACthem.{Formats, PDPv2}
 
   describe "authorizations" do
     test "authorize with regular policy" do
@@ -63,9 +63,9 @@ defmodule PDPv2Test do
         }
       }
 
-      assert ^new_policy = Serialization.from_old_to_new(old_policy)
+      assert ^new_policy = Formats.from_old_to_new(old_policy)
 
-      assert ^old_policy = Serialization.from_new_to_old(new_policy)
+      assert ^old_policy = Formats.from_new_to_old(new_policy)
     end
   end
 end
