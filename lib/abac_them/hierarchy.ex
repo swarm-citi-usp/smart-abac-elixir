@@ -5,7 +5,7 @@ defmodule ABACthem.Hierarchy do
     Logger.info("Opening ABAC hierarchy...")
 
     Agent.start_link(fn ->
-      "abac_them_hierarchy/tests/example_home_policy.n3"
+      Application.get_env(:abac_them, :hierarchy_file)
       |> open()
       |> parse()
       |> to_adjacency_list()
@@ -21,6 +21,15 @@ defmodule ABACthem.Hierarchy do
 
   def get_graph() do
     Agent.get(__MODULE__, fn graph -> graph end)
+  end
+
+  def set_graph(graph_filename) do
+    Agent.update(__MODULE__, fn _ ->
+      graph_filename
+      |> open()
+      |> parse()
+      |> to_adjacency_list()
+    end)
   end
 
   def expand_attr(_name, value) do

@@ -16,4 +16,16 @@ defmodule PolicyV2Test do
 
     assert {:ok, %RequestV2{}} = ABACthem.build_request(request_attrs)
   end
+
+  test "expand request attributes" do
+    request_attrs = params_for(:request)
+    subject_attrs = Map.merge(request_attrs[:subject], %{"role" => "swarm:Mother"})
+    request_attrs = put_in(request_attrs, [:subject], subject_attrs)
+    {:ok, request} = ABACthem.build_request(request_attrs)
+
+    assert "swarm:AdultFamilyMember" in RequestV2.add_expanded_attrs(request.subject)["role"]
+
+    request = RequestV2.expand_attrs(request)
+    assert "swarm:AdultFamilyMember" in request.subject["role"]
+  end
 end

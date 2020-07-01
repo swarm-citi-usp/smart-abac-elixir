@@ -3,6 +3,8 @@
 use Mix.Config
 
 config :abac_them, hierarchy_client: ABACthem.Hierarchy#Client
+config :abac_them, hierarchy_file: "example_home_policy.n3"
+
 config :abac_them, hierarchy_service_url: "http://localhost:4010/expansions"
 config :abac_them, debug_pdp: false
 

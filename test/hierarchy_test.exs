@@ -3,6 +3,8 @@ defmodule HierarchyTest do
   alias ABACthem.{Hierarchy}
 
   test "expand attrs" do
+    Hierarchy.set_graph("example_home_policy.n3")
+
     assert [
              "swarm:AdultFamilyMember",
              "swarm:FamilyMember",
@@ -38,7 +40,7 @@ defmodule HierarchyTest do
   end
 
   test "parse graph from file" do
-    graph_str = Hierarchy.open("abac_them_hierarchy/tests/example_home_policy.n3")
+    graph_str = Hierarchy.open("example_home_policy.n3")
 
     graph =
       Hierarchy.parse(graph_str)

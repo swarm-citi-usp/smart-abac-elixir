@@ -17,9 +17,8 @@ defmodule ABACthem do
     policies = list_policies()
 
     request
-      # |> RequestV2.expand_attrs()
+      |> RequestV2.expand_attrs()
       |> RequestV2.add_date_time()
-      |> IO.inspect
       |> PDPv2.authorize(policies)
   end
 
