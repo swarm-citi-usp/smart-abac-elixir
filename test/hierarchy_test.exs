@@ -1,9 +1,9 @@
 defmodule HierarchyTest do
   use ExUnit.Case
-  alias ABACthem.{Hierarchy}
+  alias ABACthem.{Hierarchy, HierarchyStore}
 
   test "expand attrs" do
-    Hierarchy.set_graph("example_home_policy.n3")
+    HierarchyStore.set_graph_from_file("example_home_policy.n3")
 
     assert [
              "swarm:AdultFamilyMember",
@@ -40,11 +40,11 @@ defmodule HierarchyTest do
   end
 
   test "parse graph from file" do
-    graph_str = Hierarchy.open("example_home_policy.n3")
+    graph_str = HierarchyStore.open("example_home_policy.n3")
 
     graph =
-      Hierarchy.parse(graph_str)
-      |> Hierarchy.to_adjacency_list()
+      HierarchyStore.parse(graph_str)
+      |> HierarchyStore.to_adjacency_list()
 
     assert ["swarm:Acquaintance"] == graph["swarm:Friend"]
   end
@@ -64,7 +64,7 @@ defmodule HierarchyTest do
     abac:name swarm:Role .
     """
 
-    graph = Hierarchy.parse(graph_str)
+    graph = HierarchyStore.parse(graph_str)
 
     assert {"swarm:Children", "swarm:FamilyMember"} in graph
     assert {"swarm:Father", "swarm:AdultFamilyMember"} in graph

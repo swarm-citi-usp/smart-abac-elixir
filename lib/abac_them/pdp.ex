@@ -68,7 +68,7 @@ defmodule ABACthem.PDP do
   end
 
   @doc """
-  Compares a object.
+  Compares an object attribute.
   """
   def match_attr("object", {req_name, req_value}, policy_attr) do
     policy_attr.name == req_name && match_attrs(req_value, policy_attr.value)
@@ -77,21 +77,10 @@ defmodule ABACthem.PDP do
   @doc """
   Match a numerical value against a range defined as a map.
   """
-  def match_range(value, range) do
-    case range do
-      %{min: min, max: max} ->
-        value >= min && value <= max
-
-      %{min: min} ->
-        value >= min
-
-      %{max: max} ->
-        value <= max
-
-      _ ->
-        false
-    end
-  end
+  def match_range(value, %{min: min, max: max}), do: value >= min && value <= max
+  def match_range(value, %{min: min}), do: value >= min
+  def match_range(value, %{max: max}), do: value <= max
+  def match_range(_value, _invalid_range), do: false
 
   @doc """
   Tests whether the request operations are allowed by a policy.

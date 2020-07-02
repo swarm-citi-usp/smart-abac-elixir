@@ -25,12 +25,10 @@ defmodule ABACthem.Request do
   end
 
   def expand_attrs(request) do
-    %__MODULE__{
-      request
-      | subject: add_expanded_attrs(request.subject),
-        object: add_expanded_attrs(request.object),
-        context: add_expanded_attrs(request.context)
-    }
+    request
+    |> Map.put(:subject, add_expanded_attrs(request.subject))
+    |> Map.put(:object, add_expanded_attrs(request.object))
+    |> Map.put(:context, add_expanded_attrs(request.context))
   end
 
   def add_expanded_attrs(attrs) do

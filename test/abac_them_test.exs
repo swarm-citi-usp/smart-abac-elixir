@@ -1,7 +1,7 @@
 defmodule ABACthemTest do
   use ExUnit.Case
   import ABACthem.Factory
-  alias ABACthem.{Hierarchy, Serialization}
+  alias ABACthem.{HierarchyStore, Serialization}
 
   setup do
     ABACthem.Store.reset()
@@ -17,7 +17,7 @@ defmodule ABACthemTest do
   end
 
   test "authorize based on hierarchy" do
-    Hierarchy.set_graph("example_home_policy.n3")
+    HierarchyStore.set_graph_from_file("example_home_policy.n3")
 
     {:ok, _policy} =
       params_for(:policy)
