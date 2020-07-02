@@ -12,7 +12,7 @@ The following code section creates an ABAC-them policy that represents this rest
 %{
   "id" => "1234",
   "name" => "security access for adults",
-  "privileges" => %{
+  "permissions" => %{
     "subject" => %{"age" => %{"min" => 18}},
     "object" => %{"type" => "securityCamera"},
     "context" => %{},

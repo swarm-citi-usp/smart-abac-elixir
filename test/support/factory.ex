@@ -7,7 +7,7 @@ defmodule ABACthem.Factory do
     %Policy{
       id: "123",
       name: "test policy",
-      privileges: %{
+      permissions: %{
         subject: %{"id" => "alice"},
         object: %{"owner" => "alice"},
         context: %{"dateTime" => %{"year" => 2020}},

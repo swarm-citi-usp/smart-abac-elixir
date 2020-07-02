@@ -21,7 +21,7 @@ defmodule ABACthemTest do
 
     {:ok, _policy} =
       params_for(:policy)
-      |> put_in([:privileges, :subject], %{"role" => "swarm:AdultFamilyMember"})
+      |> put_in([:permissions, :subject], %{"role" => "swarm:AdultFamilyMember"})
       |> ABACthem.create_policy()
 
     {:ok, request} =

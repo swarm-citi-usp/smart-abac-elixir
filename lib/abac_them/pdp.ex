@@ -9,7 +9,7 @@ defmodule ABACthem.PDP do
     policies
     |> Enum.any?(fn policy ->
       # && !match_rules(request, policy.prohibitions)
-      match_rules(request, policy.privileges)
+      match_rules(request, policy.permissions)
     end)
   end
 

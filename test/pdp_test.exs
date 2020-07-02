@@ -16,11 +16,11 @@ defmodule PDPTest do
     test "authorize, policy with nested object" do
       {:ok, new_policy} =
         params_for(:policy)
-        |> put_in([:privileges, :object], %{
+        |> put_in([:permissions, :object], %{
           "type" => "camera",
           "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}
         })
-        |> put_in([:privileges, :context], %{})
+        |> put_in([:permissions, :context], %{})
         |> ABACthem.create_policy()
 
       {:ok, request} =

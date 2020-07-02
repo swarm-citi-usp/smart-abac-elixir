@@ -9,14 +9,14 @@ defmodule ABACthem.Policy do
   import Ecto.Changeset
   alias ABACthem.Rule
 
-  @derive {Jason.Encoder, only: [:id, :version, :name, :privileges]}
+  @derive {Jason.Encoder, only: [:id, :version, :name, :permissions]}
 
   @primary_key false
   embedded_schema do
     field(:id, :string)
     field(:version, :string, default: "2.0")
     field(:name)
-    embeds_one(:privileges, Rule)
+    embeds_one(:permissions, Rule)
   end
 
   def changeset(params) do
@@ -27,6 +27,6 @@ defmodule ABACthem.Policy do
   def changeset(struct, params) do
     struct
     |> cast(params, [:id, :version, :name])
-    |> cast_embed(:privileges)
+    |> cast_embed(:permissions)
   end
 end
