@@ -24,7 +24,7 @@ defmodule PerformanceTest do
     wrapper_run([10, 20], [5])
 
     # real test
-    wrapper_run([500, 1000, 1500, 2000], [50, 100])
+    wrapper_run([100, 1000, 2000, 3000, 4000], [50, 100])
   end
 
   def wrapper_run(steps_m, steps_n) do
