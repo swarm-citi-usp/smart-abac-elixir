@@ -148,8 +148,10 @@ defmodule PerformanceTest do
   end
 
   def setup_results_csv(steps_m, steps_n) do
-    file = "policies_#{inspect steps_m}-#{inspect steps_n}.csv"
-    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/#{file}")
-    File.write(filename, "policies, attributes, spent time\n")
+    pathname = Path.join(:code.priv_dir(:abac_them), "/benchmark/")
+    File.mkdir(pathname)
+    filename = "policies_#{inspect steps_m}-#{inspect steps_n}.csv"
+    full_filename = "#{pathname}/#{filename}"
+    File.write(full_filename, "policies, attributes, spent time\n")
   end
 end
