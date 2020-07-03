@@ -20,6 +20,10 @@ defmodule PerformanceTest do
   # @tag :skip
   @tag timeout: :infinity
   test "run the real test" do
+    # warm up
+    wrapper_run([10, 20], [5])
+
+    # real test
     wrapper_run([500, 1000, 1500, 2000], [50, 100])
   end
 
