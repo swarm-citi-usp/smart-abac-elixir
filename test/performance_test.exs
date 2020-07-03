@@ -13,6 +13,7 @@ defmodule PerformanceTest do
     assert {:ok, _} = load_policies(2, 2)
   end
 
+  @tag timeout: :infinity
   test "run a small test" do
     wrapper_run([10, 20], [5])
   end
@@ -31,7 +32,7 @@ defmodule PerformanceTest do
     setup_results_csv(steps_m, steps_n)
     for m <- Enum.shuffle(steps_m) do
       for n <- Enum.shuffle(steps_n) do
-        runs = 10
+        runs = 5
 
         sum =
           for _ <- 1..runs do
@@ -40,7 +41,7 @@ defmodule PerformanceTest do
           |> Enum.reduce(fn x, acc -> x + acc end)
 
         t = sum / runs
-        Logger.debug("Average authz took #{t} ms")
+        Logger.debug("=== Average authz took #{t} ms ===")
         append_results_csv([m, n, t], steps_m, steps_n)
       end
     end
@@ -63,7 +64,7 @@ defmodule PerformanceTest do
 
     {:ok, known_policy} = params_for(:policy) |> ABACthem.build_policy()
     policies = insert_known_policy_at_half(policies, known_policy)
-    {:ok, request} = params_for(:request) |> ABACthem.build_request()
+    {:ok, request} = params_for(:request_expanded) |> ABACthem.build_request()
 
     Process.sleep(3000)
     Process.sleep(100+:random.uniform(100))
@@ -134,6 +135,7 @@ defmodule PerformanceTest do
     |> File.open()
     |> case do
       {:ok, file} ->
+        Logger.debug("Parsing json")
         Serialization.from_json(IO.read(file, :all))
       error ->
         error

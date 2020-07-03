@@ -24,4 +24,13 @@ defmodule ABACthem.Factory do
       operations: ["create"]
     }
   end
+
+  def request_expanded_factory do
+    %Request{
+      subject: %{"id" => "alice"},
+      object: %{"owner" => ["Alice","alice","a l i c e"]},
+      context: %{"dateTime" => %{"year" => 2020}},
+      operations: ["create"]
+    }
+  end
 end
