@@ -159,7 +159,6 @@ defmodule PerformanceTest do
   def results_filename(steps_m, steps_n) do
     pathname = Path.join(:code.priv_dir(:abac_them), "/benchmark/")
     filename = "results_#{inspect steps_m}-#{inspect steps_n, charlists: :as_lists}.csv"
-    full_filename = "#{pathname}/#{filename}"
     {pathname, filename}
   end
 end
