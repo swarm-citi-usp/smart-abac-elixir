@@ -5,26 +5,30 @@ defmodule PerformanceTest do
   import ABACthem.Factory
   alias ABACthem.{Policy, Request, HierarchyStore, Serialization, PDP}
 
-  test "create policy" do
+  test "generate, save, and load policies" do
     HierarchyStore.set_graph_from_file("example_home_policy.n3")
-
-    assert {:ok, "[]"} = load_policies(0, 0)
-    assert {:error, msg} = load_policies(0, 1)
-  end
-
-  test "generate policies" do
     policies = generate(2, 2)
     assert 2 == length(policies)
+    save_policies(policies, 2, 2)
+    assert {:ok, _} = load_policies(2, 2)
+  end
+
+  test "run a small test" do
+    wrapper_run([10, 20], [5])
   end
 
   # @tag :skip
-  test "run the test" do
-    # run(500, 50)
-    for m <- [500, 1000, 1500, 2000] do
-      for n <- [50, 100] do
-    # for m <- [20] do
-    #   for n <- [5] do
-        run(m, n)
+  @tag timeout: :infinity
+  test "run the real test" do
+    wrapper_run([500, 1000, 1500, 2000], [50, 100])
+  end
+
+  def wrapper_run(steps_m, steps_n) do
+    setup_results_csv(steps_m, steps_n)
+    for m <- steps_m do
+      for n <- steps_n do
+        t = run(m, n)
+        append_results_csv([m, n, t], steps_m, steps_n)
       end
     end
   end
@@ -54,11 +58,12 @@ defmodule PerformanceTest do
       start_ms = start()
       assert PDP.authorize(request, policies)
       final_ms = finish(start_ms)
-      Logger.info("Authz took #{final_ms} ms")
+      Logger.debug(">>> authz took #{final_ms} ms")
       sum = sum + final_ms
     end
     avg = sum / runs
     Logger.debug("Average authz took #{avg} ms")
+    avg
   end
 
   def insert_known_policy_at_half(ps, known_policy) do
@@ -129,5 +134,22 @@ defmodule PerformanceTest do
     filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/policies_#{m}-#{n}.json")
     {:ok, json_policies} = Serialization.to_json(policies, pretty: true)
     File.write(filename, json_policies)
+  end
+
+  def save_results(results, steps_m, steps_n) do
+    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/policies_#{steps_m}-#{steps_n}.json")
+    File.write(filename, Jason.encode!(results))
+  end
+
+  def append_results_csv([m, n, t], steps_m, steps_n) do
+    file = "policies_#{inspect steps_m}-#{inspect steps_n}.csv"
+    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/#{file}")
+    File.write(filename, "#{m},#{n},#{t}\n", [:append])
+  end
+
+  def setup_results_csv(steps_m, steps_n) do
+    file = "policies_#{inspect steps_m}-#{inspect steps_n}.csv"
+    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/#{file}")
+    File.write(filename, "policies, attributes, spent time\n")
   end
 end
