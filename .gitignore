@@ -26,4 +26,7 @@ ac-*.tar
 
 *.swp
 
-priv/generated
+priv/generated/
+
+priv/benchmark/
+

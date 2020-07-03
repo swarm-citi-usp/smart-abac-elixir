@@ -7,7 +7,7 @@ config :abac_them, hierarchy_file: "example_home_policy.n3"
 
 config :abac_them, debug_pdp: false
 
-config :logger, level: :error
+config :logger, level: :debug
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
