@@ -31,7 +31,16 @@ defmodule PerformanceTest do
     setup_results_csv(steps_m, steps_n)
     for m <- Enum.shuffle(steps_m) do
       for n <- Enum.shuffle(steps_n) do
-        t = run(m, n)
+        runs = 10
+
+        sum =
+          for _ <- 1..runs do
+            run(m, n)
+          end
+          |> Enum.reduce(fn x, acc -> x + acc end)
+
+        t = sum / runs
+        Logger.debug("Average authz took #{t} ms")
         append_results_csv([m, n, t], steps_m, steps_n)
       end
     end
@@ -57,21 +66,14 @@ defmodule PerformanceTest do
     {:ok, request} = params_for(:request) |> ABACthem.build_request()
 
     Process.sleep(3000)
-    runs = 50
-    sum =
-      for _ <- 0..runs do
-        Process.sleep(100+:random.uniform(100))
-        start_ms = start()
-        assert PDP.authorize(request, policies)
-        spent_ms = finish(start_ms)
-        IO.write(" #{spent_ms} ")
-        spent_ms
-      end
-      |> Enum.reduce(fn x, acc -> x + acc end)
-    avg = sum / runs
-    IO.puts("")
-    Logger.debug("Average authz took #{avg} ms")
-    avg
+    Process.sleep(100+:random.uniform(100))
+    start_ms = start()
+    assert PDP.authorize(request, policies)
+    spent_ms = finish(start_ms)
+    IO.write(" #{spent_ms} ")
+    spent_ms
+    # Logger.debug("Average authz took #{avg} ms")
+    spent_ms
   end
 
   def insert_known_policy_at_half(ps, known_policy) do
