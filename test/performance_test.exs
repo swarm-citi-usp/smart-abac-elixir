@@ -24,13 +24,13 @@ defmodule PerformanceTest do
     wrapper_run([10, 20], [5])
 
     # real test
-    wrapper_run([500, 1000, 1500, 2000], [50, 100])
+    wrapper_run([100, 1000, 2000, 3000], [10, 100, 200])
   end
 
   def wrapper_run(steps_m, steps_n) do
     setup_results_csv(steps_m, steps_n)
-    for m <- steps_m do
-      for n <- steps_n do
+    for m <- Enum.shuffle(steps_m) do
+      for n <- Enum.shuffle(steps_n) do
         t = run(m, n)
         append_results_csv([m, n, t], steps_m, steps_n)
       end
@@ -38,7 +38,7 @@ defmodule PerformanceTest do
   end
 
   def run(m, n) do
-    Logger.debug("Will run for n=#{n} and m=#{m}")
+    Logger.debug(">>> Will run for n=#{n} and m=#{m}")
     policies =
       load_policies(m, n)
       |> case do
@@ -56,17 +56,20 @@ defmodule PerformanceTest do
     policies = insert_known_policy_at_half(policies, known_policy)
     {:ok, request} = params_for(:request) |> ABACthem.build_request()
 
-    runs = 10
+    Process.sleep(3000)
+    runs = 50
     sum =
       for _ <- 0..runs do
+        Process.sleep(100+:random.uniform(100))
         start_ms = start()
         assert PDP.authorize(request, policies)
         spent_ms = finish(start_ms)
-        Logger.debug(">>> authz took #{spent_ms} ms")
+        IO.write(" #{spent_ms} ")
         spent_ms
       end
       |> Enum.reduce(fn x, acc -> x + acc end)
     avg = sum / runs
+    IO.puts("")
     Logger.debug("Average authz took #{avg} ms")
     avg
   end
