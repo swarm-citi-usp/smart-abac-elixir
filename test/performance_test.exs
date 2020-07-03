@@ -141,22 +141,22 @@ defmodule PerformanceTest do
     File.write(filename, json_policies)
   end
 
-  def save_results(results, steps_m, steps_n) do
-    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/policies_#{steps_m}-#{steps_n}.json")
-    File.write(filename, Jason.encode!(results))
-  end
-
   def append_results_csv([m, n, t], steps_m, steps_n) do
-    file = "policies_#{inspect steps_m}-#{inspect steps_n}.csv"
-    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/#{file}")
-    File.write(filename, "#{m},#{n},#{t}\n", [:append])
+    {pathname, filename} = results_filename(steps_m, steps_n)
+    File.write("#{pathname}/#{filename}", "#{m},#{n},#{t}\n", [:append])
   end
 
   def setup_results_csv(steps_m, steps_n) do
-    pathname = Path.join(:code.priv_dir(:abac_them), "/benchmark/")
+    {pathname, filename} = results_filename(steps_m, steps_n)
     File.mkdir(pathname)
-    filename = "policies_#{inspect steps_m}-#{inspect steps_n}.csv"
+    Logger.debug("Results go to file #{pathname}/#{filename}")
+    File.write("#{pathname}/#{filename}", "policies, attributes, spent time\n")
+  end
+
+  def results_filename(steps_m, steps_n) do
+    pathname = Path.join(:code.priv_dir(:abac_them), "/benchmark/")
+    filename = "results_#{inspect steps_m}-#{inspect steps_n, charlists: :as_lists}.csv"
     full_filename = "#{pathname}/#{filename}"
-    File.write(full_filename, "policies, attributes, spent time\n")
+    {pathname, filename}
   end
 end
