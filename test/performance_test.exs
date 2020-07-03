@@ -53,14 +53,15 @@ defmodule PerformanceTest do
     {:ok, request} = params_for(:request) |> ABACthem.build_request()
 
     runs = 10
-    sum = 0
-    for _ <- 0..runs do
-      start_ms = start()
-      assert PDP.authorize(request, policies)
-      final_ms = finish(start_ms)
-      Logger.debug(">>> authz took #{final_ms} ms")
-      sum = sum + final_ms
-    end
+    sum =
+      for _ <- 0..runs do
+        start_ms = start()
+        assert PDP.authorize(request, policies)
+        spent_ms = finish(start_ms)
+        Logger.debug(">>> authz took #{spent_ms} ms")
+        spent_ms
+      end
+      |> Enum.reduce(fn x, acc -> x + acc end)
     avg = sum / runs
     Logger.debug("Average authz took #{avg} ms")
     avg
