@@ -150,7 +150,8 @@ defmodule PerformanceTest do
 
   def append_results_csv([m, n, t], steps_m, steps_n) do
     {pathname, filename} = results_filename(steps_m, steps_n)
-    File.write("#{pathname}/#{filename}", "#{m},#{n},#{t}\n", [:append])
+    t = "\"#{t}\"" |> String.replace(".", ",")
+    File.write("#{pathname}/#{filename}", "#{m},#{n}#,{t}\n", [:append])
   end
 
   def setup_results_csv(steps_m, steps_n) do
