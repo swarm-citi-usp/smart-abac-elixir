@@ -55,10 +55,10 @@ Add to your `mix.exs` file:
 ## The `them` acronym
 The model is named after its main features:
 
-- Typed: attributes have types
+- Typed: attributes have types (string, integer, float, range, map)
 - Hierarchical: attribute values can have hierarchies
 - Enumerated: policies are created by enumerating accepted values
-- Multi-Attribute: each policy container can have more than one attribute
+- Multi-Attribute: each policy container can have more than one attribute (e.g. user: `[{id: 1, role: student}]`)
 
 ## Motivation
 
