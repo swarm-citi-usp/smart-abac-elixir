@@ -25,7 +25,7 @@ defmodule PerformanceTest do
     wrapper_run([10, 20], [5])
 
     # real test
-    wrapper_run([100, 1000, 2000, 3000], [10, 100, 200])
+    wrapper_run([100, 500, 1000, 1500, 2000, 2500, 3000], [10, 100, 200])
   end
 
   def wrapper_run(steps_m, steps_n) do
@@ -151,7 +151,7 @@ defmodule PerformanceTest do
   def append_results_csv([m, n, t], steps_m, steps_n) do
     {pathname, filename} = results_filename(steps_m, steps_n)
     t = "\"#{t}\"" |> String.replace(".", ",")
-    File.write("#{pathname}/#{filename}", "#{m},#{n}#,{t}\n", [:append])
+    File.write("#{pathname}/#{filename}", "#{m},#{n},#{t}\n", [:append])
   end
 
   def setup_results_csv(steps_m, steps_n) do
