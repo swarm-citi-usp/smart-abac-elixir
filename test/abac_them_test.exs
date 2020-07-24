@@ -40,4 +40,15 @@ defmodule ABACthemTest do
 
     assert {:ok, ^policy} = Serialization.from_json(policy_json)
   end
+
+  test "cbor serialization" do
+    {:ok, policy} = params_for(:policy) |> ABACthem.build_policy()
+
+    policy_cbor = Serialization.to_cbor(policy)
+    assert is_binary(policy_cbor)
+
+    {:ok, policy_back} = Serialization.from_cbor(policy_cbor)
+    assert is_map(policy_back)
+    assert ^policy = policy_back
+  end
 end

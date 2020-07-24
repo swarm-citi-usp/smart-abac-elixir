@@ -3,7 +3,7 @@ defmodule PerformanceTest do
   require Logger
   doctest ABACthem
   import ABACthem.Factory
-  alias ABACthem.{Policy, Request, HierarchyStore, Serialization, PDP}
+  alias ABACthem.{HierarchyStore, Serialization, PDP}
 
   test "generate, save, and load policies" do
     HierarchyStore.set_graph_from_file("example_home_policy.n3")
@@ -13,12 +13,13 @@ defmodule PerformanceTest do
     assert {:ok, _} = load_policies(2, 2)
   end
 
+  @tag :skip
   @tag timeout: :infinity
   test "run a small test" do
     wrapper_run([10, 20], [5])
   end
 
-  # @tag :skip
+  @tag :skip
   @tag timeout: :infinity
   test "run the real test" do
     # warm up
@@ -72,7 +73,6 @@ defmodule PerformanceTest do
     assert PDP.authorize(request, policies)
     spent_ms = finish(start_ms)
     IO.write(" #{spent_ms} ")
-    spent_ms
     # Logger.debug("Average authz took #{avg} ms")
     spent_ms
   end

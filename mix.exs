@@ -26,6 +26,7 @@ defmodule ABACthem.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:cbor, "~> 1.0.0"},
       {:ecto, "~> 3.3"},
       {:ex_machina, "~> 2.4", only: :test},
       {:tzdata, "~> 1.0.1"},
