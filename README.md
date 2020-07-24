@@ -4,7 +4,7 @@ This repo implements a novel Attribute-Based Access Control (ABAC) model that is
 
 # Example
 
-Consider a smart-home use case, with the restriction _any security camera can be accessed and modified by any adult family member_.
+Consider a smart-home use case with the following restriction: _any security camera can be accessed and modified by any adult family member_.
 
 The following code section creates an ABAC-them policy that represents this restriction, and runs some requests against it.
 
@@ -55,22 +55,22 @@ Add to your `mix.exs` file:
 ## The `them` acronym
 The model is named after its main features:
 
-- Typed: attributes have types
+- Typed: attributes have types (string, integer, float, range, map)
 - Hierarchical: attribute values can have hierarchies
 - Enumerated: policies are created by enumerating accepted values
-- Multi-Attribute: each policy container can have more than one attribute
+- Multi-Attribute: each policy container can have more than one attribute (e.g. user: `[{id: 1, role: student}]`)
 
 ## Motivation
 
 This model exists because existing models are either:
 
 - Too complex, e.g.:
-  - XACML uses XML and is bloated
-  - HGABAC uses a concise logic language, but requires advanced parsers and can be NP-complete to review
+  - [XACML](http://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html) uses XML and is too verbose
+  - [HGABAC](https://link.springer.com/chapter/10.1007/978-3-319-17040-4_12) uses a concise logic language, but requires advanced parsers and can be NP-complete to audit
 - Too restrictive, e.g.:
   - RBAC only supports roles
-  - EAP-ABACm,n does not support types nor hierarchies
-  - Policy Machine does not support types nor conjunctive policies
+  - [EAP-ABACm,n](https://profsandhu.com/ics/2017%20Prosunjit%20Biswas.pdf) does not support types nor hierarchies
+  - [Policy Machine](https://www.sciencedirect.com/science/article/pii/S1383762110000251) does not support types nor conjunctive policies
 
 # Contributing
 
