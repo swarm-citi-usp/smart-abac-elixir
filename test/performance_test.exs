@@ -13,6 +13,18 @@ defmodule PerformanceTest do
     assert {:ok, _} = load_policies(2, 2)
   end
 
+  test "compare sizes" do
+    {:ok, policy} = params_for(:policy) |> ABACthem.build_policy()
+
+    {:ok, policy_json} = Serialization.to_json(policy)
+    {:ok, policy_cbor} = Serialization.to_cbor(policy)
+    # {:ok, policy_cbor} = Serialization.to_cbor(policy, :hex) |> IO.inspect
+
+    jl = String.length(policy_json)
+    cl = String.length(policy_cbor)
+    Logger.info("JSON length: #{jl}, CBOR length: #{cl}, ratio: #{Float.round(cl / jl, 2)}")
+  end
+
   @tag :skip
   @tag timeout: :infinity
   test "run a small test" do

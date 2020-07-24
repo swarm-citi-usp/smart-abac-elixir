@@ -52,6 +52,33 @@ Add to your `mix.exs` file:
 
 # Details
 
+## Serialization
+
+Currenly JSON and CBOR are supported.
+
+JSON example:
+
+```elixir
+"""
+{
+  "id": "1234",
+  "version": "2.0",
+  "name": "security access for adults",
+  "permissions": {
+    "subject": {"age": {"min": 18}},
+    "object": {"type": "securityCamera"},
+    "context": {},
+    "operations": ["create", "read", "update"]
+  }
+}
+""" |> ABACthem.Serialization.from_json
+```
+
+CBOR example:
+```
+"A36269646431323334646E616D65781A73656375726974792061636365737320666F72206164756C74736B7065726D697373696F6E73A467636F6E74657874A0666F626A656374A164747970656E736563757269747943616D6572616A6F7065726174696F6E738366637265617465647265616466757064617465677375626A656374A163616765A1636D696E12" |> ABACthem.Serialization.from_cbor(:hex)
+```
+
 ## The `them` acronym
 The model is named after its main features:
 

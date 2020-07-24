@@ -22,11 +22,25 @@ defmodule ABACthem.Serialization do
     end
   end
 
-  def to_cbor(policy) do
-    CBOR.encode(policy)
+  def to_cbor(policy, binary \\ :raw) do
+    policy_cbor =
+      if binary == :hex do
+        CBOR.encode(policy) |> Base.encode16()
+      else
+        CBOR.encode(policy)
+      end
+
+    {:ok, policy_cbor}
   end
 
-  def from_cbor(policy_cbor) do
+  def from_cbor(policy_cbor, binary \\ :raw) do
+    policy_cbor =
+      if binary == :hex do
+        Base.decode16!(policy_cbor)
+      else
+        policy_cbor
+      end
+
     policy_cbor
     |> CBOR.decode()
     |> case do
