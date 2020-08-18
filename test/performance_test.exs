@@ -41,6 +41,27 @@ defmodule PerformanceTest do
     wrapper_run([100, 500, 1000, 1500, 2000, 2500, 3000], [10, 100, 200])
   end
 
+  test "run 1 request against 6 policies 3000 times" do
+    {:ok, policies} =
+      paper_policies()
+      |> ABACthem.Serialization.from_json()
+
+    for p <- policies do
+      ABACthem.Store.update(p)
+    end
+    {:ok, request1} = paper_request1()
+    assert ABACthem.authorize(request1)
+
+    Process.sleep(3000)
+    Process.sleep(100+:random.uniform(100))
+    start_ms = start()
+    for _i <- 1..3000 do
+      ABACthem.authorize(request1)
+    end
+    spent_ms = finish(start_ms)
+    Logger.debug("The time taken to authorize 1 request against 6 policies, 3000 times, was #{spent_ms} ms")
+  end
+
   def wrapper_run(steps_m, steps_n) do
     setup_results_csv(steps_m, steps_n)
     for m <- Enum.shuffle(steps_m) do
@@ -177,5 +198,68 @@ defmodule PerformanceTest do
     pathname = Path.join(:code.priv_dir(:abac_them), "/benchmark/")
     filename = "results_#{inspect steps_m}-#{inspect steps_n, charlists: :as_lists}.csv"
     {pathname, filename}
+  end
+
+  def paper_request1 do
+    %{
+      "subject" => %{"household" => %{"id" => "home-1", "role" => "child"}},
+      "object" => %{"type" => "lightingAppliance", "household" => %{"id" => "home-1"}},
+      "context" => %{"outdoorLuminosity" => 25},
+      "operations" => ["read"]
+    }
+    |> ABACthem.build_request()
+  end
+
+  def paper_policies do
+    """
+      [
+        {
+          "id": "1",
+          "permissions": {
+              "subject": {"id": "alice"},
+              "object": {"owner": "alice"},
+              "operations": ["create", "read", "update", "delete"]
+          }
+        }, {
+          "id": "2",
+          "permissions": {
+              "subject": {"age": {"min": 18}, "household": {"id": "home-1"}},
+              "object": {"type": "securityAppliance", "household": {"id": "home-1"}},
+              "operations": ["read", "update"]
+          }
+        }, {
+          "id": "3",
+          "permissions": {
+              "subject": {"household": {"id": "home-1", "role": "child"}},
+              "object": {"type": "lightingAppliance", "household": {"id": "home-1"}},
+              "context": {"outdoorLuminosity": {"max": 33}},
+              "operations": ["read", "update"]
+          }
+        }, {
+          "id": "4",
+          "permissions": {
+              "subject": {"id": "camera1"},
+              "object": {"id": "lamp1"},
+              "operations": ["read", "update"]
+          }
+        }, {
+          "id": "5",
+          "permissions": {
+              "subject": {"reputation": {"min": 4}},
+              "object": {"type": "securityCamera", "household": {"id": "home-1"}, "location": "outdoor"},
+              "context": {"hour": {"min": 8, "max": 18}},
+              "operations": ["contract"]
+          }
+        }, {
+          "id": "6",
+          "permissions": {
+              "subject": {"id": "some-device-x"},
+              "object": {"id": "camera1"},
+              "context": {"year": 2020, "month": 6, "day": 30, "hour": 17, "minute": {"min": 20, "max": 25}},
+              "operations": ["read"]
+          }
+        }
+      ]
+      """
   end
 end

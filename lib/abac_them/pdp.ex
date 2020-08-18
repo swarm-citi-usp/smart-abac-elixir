@@ -1,5 +1,6 @@
 defmodule ABACthem.PDP do
   use ABACthem.LogDecorator
+  require Logger
   alias ABACthem.Types
 
   @doc """
@@ -8,8 +9,11 @@ defmodule ABACthem.PDP do
   def authorize(request, policies) do
     policies
     |> Enum.any?(fn policy ->
+      Application.get_env(:abac_them, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
       # && !match_rules(request, policy.prohibitions)
-      match_rules(request, policy.permissions)
+      decision = match_rules(request, policy.permissions)
+      Application.get_env(:abac_them, :debug_pdp) && Logger.info("Decision was #{decision} >>")
+      decision
     end)
   end
 

@@ -10,7 +10,7 @@ defmodule ABACthem do
 
     request
     |> Request.expand_attrs()
-    |> Request.add_date_time()
+    # |> Request.add_date_time()
     |> PDP.authorize(policies)
   end
 
