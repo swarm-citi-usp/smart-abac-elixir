@@ -22,7 +22,7 @@ defmodule PerformanceTest do
 
     jl = String.length(policy_json)
     cl = String.length(policy_cbor)
-    Logger.info("JSON length: #{jl}, CBOR length: #{cl}, ratio: #{Float.round(cl / jl, 2)}")
+    Logger.info("JSON length: #{jl}, CBOR length: #{cl}, ratio: #{Float.round(cl / jl, 2) * 100}%")
   end
 
   @tag :skip
@@ -41,6 +41,8 @@ defmodule PerformanceTest do
     wrapper_run([100, 500, 1000, 1500, 2000, 2500, 3000], [10, 100, 200])
   end
 
+  @tag :skip
+  @tag timeout: :infinity
   test "run 1 request against 6 policies 3000 times" do
     {:ok, policies} =
       paper_policies()
@@ -49,17 +51,44 @@ defmodule PerformanceTest do
     for p <- policies do
       ABACthem.Store.update(p)
     end
-    {:ok, request1} = paper_request1()
-    assert ABACthem.authorize(request1)
+    {:ok, request} = paper_request("3")
+    assert ABACthem.authorize(request)
 
-    Process.sleep(3000)
+    Process.sleep(1000)
     Process.sleep(100+:random.uniform(100))
     start_ms = start()
     for _i <- 1..3000 do
-      ABACthem.authorize(request1)
+      ABACthem.authorize(request)
     end
     spent_ms = finish(start_ms)
     Logger.debug("The time taken to authorize 1 request against 6 policies, 3000 times, was #{spent_ms} ms")
+  end
+
+  @tag :skip
+  @tag timeout: :infinity
+  test "run 1 request against 3 policies 3000 times" do
+    {:ok, policies} =
+      paper_3_policies()
+      |> ABACthem.Serialization.from_json()
+
+    for p <- policies do
+      ABACthem.Store.update(p)
+    end
+    {:ok, request} = paper_request("1")
+    assert ABACthem.authorize(request)
+
+    t = 20
+    sum = Enum.reduce(0..t, 0, fn _j, acc ->
+      Process.sleep(25+:random.uniform(25))
+      start_ms = start()
+      for _i <- 1..3000 do
+        ABACthem.authorize(request)
+      end
+      spent_ms = finish(start_ms)
+      acc + spent_ms
+    end)
+    avg = sum / t
+    Logger.debug("The time taken to authorize 1 request against 3 policies, 3000 times, was #{avg} ms")
   end
 
   def wrapper_run(steps_m, steps_n) do
@@ -200,14 +229,57 @@ defmodule PerformanceTest do
     {pathname, filename}
   end
 
-  def paper_request1 do
+  def paper_request(id) do
     %{
-      "subject" => %{"household" => %{"id" => "home-1", "role" => "child"}},
-      "object" => %{"type" => "lightingAppliance", "household" => %{"id" => "home-1"}},
-      "context" => %{"outdoorLuminosity" => 25},
-      "operations" => ["read"]
-    }
+      "1" => %{
+        "subject" => %{"id" => "alice"},
+        "object" => %{"owner" => "alice"},
+        "operations" => ["read"]
+      },
+      "3" => %{
+        "subject" => %{"household" => %{"id" => "home-1", "role" => "child"}},
+        "object" => %{"type" => "lightingAppliance", "household" => %{"id" => "home-1"}},
+        "context" => %{"outdoorLuminosity" => 25},
+        "operations" => ["read"]
+      },
+      "6" => %{
+        "subject" => %{"id" => "some-device-x"},
+        "object" => %{"id" => "camera1"},
+        "context" => %{"year" => 2020, "month" => 1, "day" => 1, "hour" => 17, "minute" => 21},
+        "operations" => ["read"]
+      }
+    }[id]
     |> ABACthem.build_request()
+  end
+
+  def paper_3_policies do
+    """
+      [
+        {
+          "id": "1",
+          "permissions": {
+              "subject": {"id": "alice"},
+              "object": {"owner": "alice"},
+              "operations": ["create", "read", "update", "delete"]
+          }
+        }, {
+          "id": "4",
+          "permissions": {
+              "subject": {"id": "camera1"},
+              "object": {"id": "lamp1"},
+              "operations": ["read", "update"]
+          }
+        }, {
+          "id": "6",
+          "permissions": {
+              "subject": {"id": "some-device-x"},
+              "object": {"id": "camera1"},
+              "context": {"year": 2020, "month": 1, "day": 1, "hour": 17, "minute": {"min": 20, "max": 25}},
+              "operations": ["read"]
+          }
+        }
+      ]
+      """
   end
 
   def paper_policies do

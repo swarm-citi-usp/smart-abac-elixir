@@ -5,18 +5,20 @@ defmodule ABACthem do
   require Logger
   alias ABACthem.{Policy, Request, Store, PDP}
 
-  def authorize(request = %Request{}) do
+  def authorize(request, expand \\ true)
+
+  def authorize(request = %Request{}, expand) do
     policies = list_policies()
+    request = if expand, do: Request.expand_attrs(request), else: request
 
     request
-    |> Request.expand_attrs()
-    # |> Request.add_date_time()
+    |> Request.add_date_time()
     |> PDP.authorize(policies)
   end
 
-  def authorize(request) do
+  def authorize(request, expand) do
     with {:ok, request} <- build_request(request) do
-      authorize(request)
+      authorize(request, expand)
     else
       error ->
         Logger.warn("Error (#{inspect error}) on request: #{inspect request}")

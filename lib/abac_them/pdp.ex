@@ -10,7 +10,6 @@ defmodule ABACthem.PDP do
     policies
     |> Enum.any?(fn policy ->
       Application.get_env(:abac_them, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
-      # && !match_rules(request, policy.prohibitions)
       decision = match_rules(request, policy.permissions)
       Application.get_env(:abac_them, :debug_pdp) && Logger.info("Decision was #{decision} >>")
       decision
