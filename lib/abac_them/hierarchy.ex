@@ -1,6 +1,6 @@
-defmodule ABACthem.Hierarchy do
+defmodule SmartABAC.Hierarchy do
   require Logger
-  alias ABACthem.HierarchyStore
+  alias SmartABAC.HierarchyStore
 
   def expand_attr(_name, value), do: expand_attr(value)
 

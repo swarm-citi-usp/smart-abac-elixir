@@ -1,4 +1,4 @@
-defmodule ABACthem.Serialization do
+defmodule SmartABAC.Serialization do
   @moduledoc """
   Serialize policies to and from json.
   """
@@ -13,12 +13,12 @@ defmodule ABACthem.Serialization do
     |> case do
       policies when is_list(policies) ->
         policies = Enum.map(policies, fn policy_attrs ->
-          {:ok, policy} = ABACthem.build_policy(policy_attrs)
+          {:ok, policy} = SmartABAC.build_policy(policy_attrs)
           policy
         end)
         {:ok, policies}
       policy ->
-        ABACthem.build_policy(policy)
+        SmartABAC.build_policy(policy)
     end
   end
 
@@ -46,17 +46,17 @@ defmodule ABACthem.Serialization do
     |> case do
       {:ok, policies, ""} when is_list(policies) ->
         policies = Enum.map(policies, fn policy_attrs ->
-          {:ok, policy} = ABACthem.build_policy(policy_attrs)
+          {:ok, policy} = SmartABAC.build_policy(policy_attrs)
           policy
         end)
         {:ok, policies}
       {:ok, policy, ""} ->
-        ABACthem.build_policy(policy)
+        SmartABAC.build_policy(policy)
     end
   end
 end
 
-defimpl CBOR.Encoder, for: ABACthem.Policy do
+defimpl CBOR.Encoder, for: SmartABAC.Policy do
   def encode_into(policy, acc) do
     %{
       "id" => policy.id,
@@ -66,7 +66,7 @@ defimpl CBOR.Encoder, for: ABACthem.Policy do
   end
 end
 
-defimpl CBOR.Encoder, for: ABACthem.Rule do
+defimpl CBOR.Encoder, for: SmartABAC.Rule do
   def encode_into(rule, acc) do
     %{
       "subject" => rule.subject,

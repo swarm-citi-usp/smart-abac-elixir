@@ -1,4 +1,4 @@
-defmodule ABACthem.Rule do
+defmodule SmartABAC.Rule do
   @moduledoc """
   Specifies a Rule.
   """

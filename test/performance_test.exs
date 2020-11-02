@@ -1,9 +1,9 @@
 defmodule PerformanceTest do
   use ExUnit.Case
   require Logger
-  doctest ABACthem
-  import ABACthem.Factory
-  alias ABACthem.{HierarchyStore, Serialization, PDP}
+  doctest SmartABAC
+  import SmartABAC.Factory
+  alias SmartABAC.{HierarchyStore, Serialization, PDP}
 
   test "generate, save, and load policies" do
     HierarchyStore.set_graph_from_file("example_home_policy.n3")
@@ -14,7 +14,7 @@ defmodule PerformanceTest do
   end
 
   test "compare sizes" do
-    {:ok, policy} = params_for(:policy) |> ABACthem.build_policy()
+    {:ok, policy} = params_for(:policy) |> SmartABAC.build_policy()
 
     {:ok, policy_json} = Serialization.to_json(policy)
     {:ok, policy_cbor} = Serialization.to_cbor(policy)
@@ -46,19 +46,19 @@ defmodule PerformanceTest do
   test "run 1 request against 6 policies 3000 times" do
     {:ok, policies} =
       paper_policies()
-      |> ABACthem.Serialization.from_json()
+      |> SmartABAC.Serialization.from_json()
 
     for p <- policies do
-      ABACthem.Store.update(p)
+      SmartABAC.Store.update(p)
     end
     {:ok, request} = paper_request("3")
-    assert ABACthem.authorize(request)
+    assert SmartABAC.authorize(request)
 
     Process.sleep(1000)
     Process.sleep(100+:random.uniform(100))
     start_ms = start()
     for _i <- 1..3000 do
-      ABACthem.authorize(request)
+      SmartABAC.authorize(request)
     end
     spent_ms = finish(start_ms)
     Logger.debug("The time taken to authorize 1 request against 6 policies, 3000 times, was #{spent_ms} ms")
@@ -69,20 +69,20 @@ defmodule PerformanceTest do
   test "run 1 request against 3 policies 3000 times" do
     {:ok, policies} =
       paper_3_policies()
-      |> ABACthem.Serialization.from_json()
+      |> SmartABAC.Serialization.from_json()
 
     for p <- policies do
-      ABACthem.Store.update(p)
+      SmartABAC.Store.update(p)
     end
     {:ok, request} = paper_request("1")
-    assert ABACthem.authorize(request)
+    assert SmartABAC.authorize(request)
 
     t = 20
     sum = Enum.reduce(0..t, 0, fn _j, acc ->
       Process.sleep(25+:random.uniform(25))
       start_ms = start()
       for _i <- 1..3000 do
-        ABACthem.authorize(request)
+        SmartABAC.authorize(request)
       end
       spent_ms = finish(start_ms)
       acc + spent_ms
@@ -125,9 +125,9 @@ defmodule PerformanceTest do
           policies
       end
 
-    {:ok, known_policy} = params_for(:policy) |> ABACthem.build_policy()
+    {:ok, known_policy} = params_for(:policy) |> SmartABAC.build_policy()
     policies = insert_known_policy_at_half(policies, known_policy)
-    {:ok, request} = params_for(:request_expanded) |> ABACthem.build_request()
+    {:ok, request} = params_for(:request_expanded) |> SmartABAC.build_request()
 
     Process.sleep(3000)
     Process.sleep(100+:random.uniform(100))
@@ -193,7 +193,7 @@ defmodule PerformanceTest do
     local_file = "/benchmark/policies_#{m}-#{n}.json"
     Logger.debug("Opening file #{local_file}")
 
-    Path.join(:code.priv_dir(:abac_them), local_file)
+    Path.join(:code.priv_dir(:smart_abac), local_file)
     |> File.open()
     |> case do
       {:ok, file} ->
@@ -205,7 +205,7 @@ defmodule PerformanceTest do
   end
 
   def save_policies(policies, m, n) do
-    filename = Path.join(:code.priv_dir(:abac_them), "/benchmark/policies_#{m}-#{n}.json")
+    filename = Path.join(:code.priv_dir(:smart_abac), "/benchmark/policies_#{m}-#{n}.json")
     {:ok, json_policies} = Serialization.to_json(policies, pretty: true)
     File.write(filename, json_policies)
   end
@@ -224,7 +224,7 @@ defmodule PerformanceTest do
   end
 
   def results_filename(steps_m, steps_n) do
-    pathname = Path.join(:code.priv_dir(:abac_them), "/benchmark/")
+    pathname = Path.join(:code.priv_dir(:smart_abac), "/benchmark/")
     filename = "results_#{inspect steps_m}-#{inspect steps_n, charlists: :as_lists}.csv"
     {pathname, filename}
   end
@@ -249,7 +249,7 @@ defmodule PerformanceTest do
         "operations" => ["read"]
       }
     }[id]
-    |> ABACthem.build_request()
+    |> SmartABAC.build_request()
   end
 
   def paper_3_policies do

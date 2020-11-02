@@ -1,11 +1,11 @@
-defmodule ABACthem.Types do
+defmodule SmartABAC.Types do
   require Logger
 
   defmodule Attr do
     defstruct data_type: "string", name: "", value: ""
   end
 
-  alias ABACthem.Types.Attr
+  alias SmartABAC.Types.Attr
 
   def infer_type(attr \\ %{}, recursive \\ false)
 

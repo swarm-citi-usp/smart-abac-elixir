@@ -1,4 +1,4 @@
-defmodule ABACthem.Store do
+defmodule SmartABAC.Store do
   @moduledoc """
   Store, update and query local Policies.
   """
@@ -11,8 +11,8 @@ defmodule ABACthem.Store do
 
   def child_spec(arg) do
     %{
-      id: ABACthem.Store,
-      start: {ABACthem.Store, :start_link, [arg]}
+      id: SmartABAC.Store,
+      start: {SmartABAC.Store, :start_link, [arg]}
     }
   end
 

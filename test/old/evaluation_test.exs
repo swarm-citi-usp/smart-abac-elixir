@@ -1,6 +1,6 @@
 defmodule EvaluationTest do
   use ExUnit.Case
-  alias ABACthem.{Rule}
+  alias SmartABAC.{Rule}
 
   @moduledoc """
   This module is mainly used for experimenting with policies to put in the

@@ -1,4 +1,4 @@
-# ABAC-them
+# SmartABAC
 
 This repo implements a novel Attribute-Based Access Control (ABAC) model that is intended to be run within IoT devices to protect their interactions.
 
@@ -6,7 +6,7 @@ This repo implements a novel Attribute-Based Access Control (ABAC) model that is
 
 Consider a smart-home use case with the following restriction: _any security camera can be accessed and modified by any adult family member_.
 
-The following code section creates an ABAC-them policy that represents this restriction, and runs some requests against it.
+The following code section creates an SmartABAC policy that represents this restriction, and runs some requests against it.
 
 ```elixir
 %{
@@ -18,7 +18,7 @@ The following code section creates an ABAC-them policy that represents this rest
     "context" => %{},
     "operations" => ["create", "read", "update"],
   }
-} |> ABACthem.create_policy()
+} |> SmartABAC.create_policy()
 
 # to test this policy, we create a request and try to authorize it
 
@@ -27,14 +27,14 @@ The following code section creates an ABAC-them policy that represents this rest
   "subject" => %{"age" => 25, "name" => "Alice"},
   "object" => %{"type" => "securityCamera"},
   "operations" => ["read"],
-} |> ABACthem.authorize()
+} |> SmartABAC.authorize()
 
 # and this should return false
 %{
   "subject" => %{"age" => 10, "name" => "Alice"},
   "object" => %{"type" => "securityCamera"},
   "operations" => ["read"],
-} |> ABACthem.authorize()
+} |> SmartABAC.authorize()
 ```
 
 # Installation
@@ -45,7 +45,7 @@ Add to your `mix.exs` file:
   defp deps do
     [
       # ...
-      {:abac_them, "git@github.com:swarm-citi-usp/abac-them-elixir.git"}
+      {:smart_abac, "git@github.com:swarm-citi-usp/smart-abac-elixir.git"}
     ]
   end
 ```
@@ -71,7 +71,7 @@ JSON example:
     "operations": ["create", "read", "update"]
   }
 }
-""" |> ABACthem.Serialization.from_json
+""" |> SmartABAC.Serialization.from_json
 ```
 
 CBOR example:
@@ -80,16 +80,8 @@ CBOR example:
 "666F72206164756C74736B7065726D697373696F6E73A467636F6E74657874A0" <>
 "666F626A656374A164747970656E736563757269747943616D6572616A6F7065" <>
 "726174696F6E738366637265617465647265616466757064617465677375626A" <>
-"656374A163616765A1636D696E12" |> ABACthem.Serialization.from_cbor(:hex)
+"656374A163616765A1636D696E12" |> SmartABAC.Serialization.from_cbor(:hex)
 ```
-
-## The `them` acronym
-The model is named after its main features:
-
-- Typed: attributes have types (string, integer, float, range, map)
-- Hierarchical: attribute values can have hierarchies
-- Enumerated: policies are created by enumerating accepted values
-- Multi-Attribute: each policy container can have more than one attribute (e.g. user: `[{id: 1, role: student}]`)
 
 ## Motivation
 
@@ -108,7 +100,7 @@ This model exists because existing models are either:
 1. Download the repo and run the tests:
 
 ```
-$ git clone git@gitlab.com:swarm-unit/abac-them.git
+$ git clone git@github.com:swarm-citi-usp/smart-abac-elixir.git
 $ mix deps.get
 $ mix test # run the tests to ensure everything is working
 ```

@@ -1,10 +1,10 @@
-defmodule ABACthem.Application do
+defmodule SmartABAC.Application do
   use Application
 
   def start(_type, _args) do
     children = [
-      {ABACthem.Store, []},
-      ABACthem.HierarchyStore
+      {SmartABAC.Store, []},
+      SmartABAC.HierarchyStore
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

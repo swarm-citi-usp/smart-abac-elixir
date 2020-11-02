@@ -1,9 +1,9 @@
-defmodule ABACthem.MixProject do
+defmodule SmartABAC.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :abac_them,
+      app: :smart_abac,
       version: "0.2.1",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
@@ -19,7 +19,7 @@ defmodule ABACthem.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ABACthem.Application, []}
+      mod: {SmartABAC.Application, []}
     ]
   end
 

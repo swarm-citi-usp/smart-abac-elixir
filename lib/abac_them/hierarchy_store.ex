@@ -1,4 +1,4 @@
-defmodule ABACthem.HierarchyStore do
+defmodule SmartABAC.HierarchyStore do
   require Logger
 
   def start_link(_args \\ []) do
@@ -6,7 +6,7 @@ defmodule ABACthem.HierarchyStore do
 
     Agent.start_link(
       fn ->
-        graph_filename = Application.get_env(:abac_them, :hierarchy_file)
+        graph_filename = Application.get_env(:smart_abac, :hierarchy_file)
         load(graph_filename)
       end,
       name: __MODULE__
@@ -44,7 +44,7 @@ defmodule ABACthem.HierarchyStore do
   end
 
   def open(filename) do
-    Path.join(:code.priv_dir(:abac_them), filename)
+    Path.join(:code.priv_dir(:smart_abac), filename)
     |> File.open!()
     |> IO.read(:all)
   end

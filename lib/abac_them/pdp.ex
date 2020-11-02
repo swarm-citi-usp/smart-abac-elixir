@@ -1,7 +1,7 @@
-defmodule ABACthem.PDP do
-  use ABACthem.LogDecorator
+defmodule SmartABAC.PDP do
+  use SmartABAC.LogDecorator
   require Logger
-  alias ABACthem.Types
+  alias SmartABAC.Types
 
   @doc """
   Returns whether or not any of the `policies` allow the `request` to be executed.
@@ -9,9 +9,9 @@ defmodule ABACthem.PDP do
   def authorize(request, policies) do
     policies
     |> Enum.any?(fn policy ->
-      Application.get_env(:abac_them, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
+      Application.get_env(:smart_abac, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
       decision = match_rules(request, policy.permissions)
-      Application.get_env(:abac_them, :debug_pdp) && Logger.info("Decision was #{decision} >>")
+      Application.get_env(:smart_abac, :debug_pdp) && Logger.info("Decision was #{decision} >>")
       decision
     end)
   end
@@ -29,7 +29,7 @@ defmodule ABACthem.PDP do
   @doc """
   Tests whether the request attributes are allowed by a policy.
   """
-  Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
+  Application.get_env(:smart_abac, :debug_pdp) && @decorate log(:debug)
 
   def match_attrs(request_attrs, policy_attrs) do
     policy_attrs
@@ -88,7 +88,7 @@ defmodule ABACthem.PDP do
   @doc """
   Tests whether the request operations are allowed by a policy.
   """
-  Application.get_env(:abac_them, :debug_pdp) && @decorate log(:debug)
+  Application.get_env(:smart_abac, :debug_pdp) && @decorate log(:debug)
   def match_operations([], _policy_ops), do: false
   def match_operations(_request_ops, []), do: false
   def match_operations(_request_ops, ["all"]), do: true

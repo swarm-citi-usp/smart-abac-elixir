@@ -1,19 +1,19 @@
-defmodule ABACthemTest do
+defmodule SmartABACTest do
   use ExUnit.Case
-  import ABACthem.Factory
-  alias ABACthem.{HierarchyStore, Serialization}
+  import SmartABAC.Factory
+  alias SmartABAC.{HierarchyStore, Serialization}
 
   setup do
-    ABACthem.Store.reset()
+    SmartABAC.Store.reset()
 
     :ok
   end
 
   test "authorize with regular policy" do
-    {:ok, _policy} = params_for(:policy) |> ABACthem.create_policy()
-    {:ok, request} = params_for(:request) |> ABACthem.build_request()
+    {:ok, _policy} = params_for(:policy) |> SmartABAC.create_policy()
+    {:ok, request} = params_for(:request) |> SmartABAC.build_request()
 
-    assert ABACthem.authorize(request)
+    assert SmartABAC.authorize(request)
   end
 
   test "authorize based on hierarchy" do
@@ -22,18 +22,18 @@ defmodule ABACthemTest do
     {:ok, _policy} =
       params_for(:policy)
       |> put_in([:permissions, :subject], %{"role" => "swarm:AdultFamilyMember"})
-      |> ABACthem.create_policy()
+      |> SmartABAC.create_policy()
 
     {:ok, request} =
       params_for(:request)
       |> put_in([:subject], %{"role" => "swarm:Mother"})
-      |> ABACthem.build_request()
+      |> SmartABAC.build_request()
 
-    assert ABACthem.authorize(request)
+    assert SmartABAC.authorize(request)
   end
 
   test "json serialization" do
-    {:ok, policy} = params_for(:policy) |> ABACthem.build_policy()
+    {:ok, policy} = params_for(:policy) |> SmartABAC.build_policy()
 
     {:ok, policy_json} = Serialization.to_json(policy)
     assert is_binary(policy_json)
@@ -42,7 +42,7 @@ defmodule ABACthemTest do
   end
 
   test "cbor serialization" do
-    {:ok, policy} = params_for(:policy) |> ABACthem.build_policy()
+    {:ok, policy} = params_for(:policy) |> SmartABAC.build_policy()
 
     {:ok, policy_cbor} = Serialization.to_cbor(policy)
     assert is_binary(policy_cbor)

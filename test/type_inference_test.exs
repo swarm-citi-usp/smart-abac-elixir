@@ -1,7 +1,7 @@
 defmodule TypeInferenceTest do
   use ExUnit.Case
-  doctest ABACthem
-  alias ABACthem.{Types}
+  doctest SmartABAC
+  alias SmartABAC.{Types}
 
   test "infer basic types" do
     assert [] = Types.infer_type(%{})

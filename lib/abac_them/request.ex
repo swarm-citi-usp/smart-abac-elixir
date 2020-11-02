@@ -1,10 +1,10 @@
-defmodule ABACthem.Request do
+defmodule SmartABAC.Request do
   @moduledoc """
   Specifies a Request.
   """
   use Ecto.Schema
   import Ecto.Changeset
-  alias ABACthem.{Hierarchy}
+  alias SmartABAC.{Hierarchy}
 
   @primary_key false
   embedded_schema do

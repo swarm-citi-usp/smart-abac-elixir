@@ -1,9 +1,9 @@
-defmodule ABACthem do
+defmodule SmartABAC do
   @moduledoc """
-  Documentation for ABACthem.
+  Documentation for SmartABAC.
   """
   require Logger
-  alias ABACthem.{Policy, Request, Store, PDP}
+  alias SmartABAC.{Policy, Request, Store, PDP}
 
   def authorize(request, expand \\ true)
 

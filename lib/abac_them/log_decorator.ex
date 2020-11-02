@@ -1,4 +1,4 @@
-defmodule ABACthem.LogDecorator do
+defmodule SmartABAC.LogDecorator do
   use Decorator.Define, log: 1
 
   def log(level, body, _context = %{name: name, args: [request_data, policy_data]}) do

@@ -1,13 +1,13 @@
 defmodule PDPTest do
   use ExUnit.Case
-  import ABACthem.Factory
-  alias ABACthem.{PDP}
-  alias ABACthem.Types.Attr
+  import SmartABAC.Factory
+  alias SmartABAC.{PDP}
+  alias SmartABAC.Types.Attr
 
   describe "verify authorizations" do
     test "authorize with regular policy" do
-      {:ok, new_policy} = params_for(:policy) |> ABACthem.create_policy()
-      {:ok, request} = params_for(:request) |> ABACthem.build_request()
+      {:ok, new_policy} = params_for(:policy) |> SmartABAC.create_policy()
+      {:ok, request} = params_for(:request) |> SmartABAC.build_request()
 
       assert PDP.authorize(request, [new_policy])
       refute PDP.authorize(%{request | operations: ["teleport"]}, [new_policy])
@@ -21,7 +21,7 @@ defmodule PDPTest do
           "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}
         })
         |> put_in([:permissions, :context], %{})
-        |> ABACthem.create_policy()
+        |> SmartABAC.create_policy()
 
       {:ok, request} =
         params_for(:request)
@@ -29,7 +29,7 @@ defmodule PDPTest do
           "type" => "camera",
           "geolocation" => %{"street" => "Rua Ceslau Marcelo Swartz", "number" => 214}
         })
-        |> ABACthem.build_request()
+        |> SmartABAC.build_request()
 
       assert PDP.authorize(request, [new_policy])
 

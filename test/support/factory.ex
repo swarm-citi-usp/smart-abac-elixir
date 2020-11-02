@@ -1,7 +1,7 @@
-defmodule ABACthem.Factory do
+defmodule SmartABAC.Factory do
   # without Ecto
   use ExMachina.Ecto
-  alias ABACthem.{Policy, Request}
+  alias SmartABAC.{Policy, Request}
 
   def policy_factory do
     %Policy{

@@ -1,4 +1,4 @@
-defmodule ABACthem.Policy do
+defmodule SmartABAC.Policy do
   @moduledoc """
   Specifies a Policy model for access control in the Swarm.
 
@@ -7,7 +7,7 @@ defmodule ABACthem.Policy do
   """
   use Ecto.Schema
   import Ecto.Changeset
-  alias ABACthem.Rule
+  alias SmartABAC.Rule
 
   @derive {Jason.Encoder, only: [:id, :version, :name, :permissions]}
 

@@ -1,6 +1,6 @@
 defmodule HierarchyTest do
   use ExUnit.Case
-  alias ABACthem.{Hierarchy, HierarchyStore}
+  alias SmartABAC.{Hierarchy, HierarchyStore}
 
   test "expand attrs" do
     HierarchyStore.set_graph_from_file("example_home_policy.n3")
