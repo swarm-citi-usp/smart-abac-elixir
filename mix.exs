@@ -33,7 +33,6 @@ defmodule SmartABAC.MixProject do
       {:jason, "~> 1.2"},
       {:decorator, "~> 1.2"},
       {:poison, "~> 3.1"},
-      {:tesla, "~> 1.2.1"}
     ]
   end
 end
