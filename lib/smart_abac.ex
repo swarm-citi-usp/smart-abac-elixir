@@ -30,10 +30,18 @@ defmodule SmartABAC do
     Store.all()
   end
 
-  def create_policy(policy_attrs) do
-    with {:ok, policy} <- build_policy(policy_attrs),
-         :ok <- Store.update(policy) do
+  def create_policy(%SmartABAC.Policy{} = policy) do
+    with :ok <- Store.update(policy) do
       {:ok, policy}
+    else
+      error ->
+        error
+    end
+  end
+
+  def create_policy(policy_attrs) do
+    with {:ok, policy} <- build_policy(policy_attrs) do
+      create_policy(policy)
     else
       error ->
         error
