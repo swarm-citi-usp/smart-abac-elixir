@@ -10,7 +10,7 @@ defmodule SmartABAC.Factory do
       permissions: %{
         subject: %{"id" => "alice"},
         object: %{"owner" => "alice"},
-        context: %{"dateTime" => %{"year" => 2020}},
+        context: %{"dateTime" => %{"year" => Date.utc_today.year}},
         operations: ["create"]
       }
     }
@@ -20,7 +20,7 @@ defmodule SmartABAC.Factory do
     %Request{
       subject: %{"id" => "alice"},
       object: %{"owner" => "alice"},
-      context: %{"dateTime" => %{"year" => 2020}},
+      context: %{"dateTime" => %{"year" => Date.utc_today.year}},
       operations: ["create"]
     }
   end
@@ -29,7 +29,7 @@ defmodule SmartABAC.Factory do
     %Request{
       subject: %{"id" => "alice"},
       object: %{"owner" => ["Alice","alice","a l i c e"]},
-      context: %{"dateTime" => %{"year" => 2020}},
+      context: %{"dateTime" => %{"year" => Date.utc_today.year}},
       operations: ["create"]
     }
   end
