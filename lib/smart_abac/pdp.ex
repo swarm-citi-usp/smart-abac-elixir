@@ -3,17 +3,28 @@ defmodule SmartABAC.PDP do
   require Logger
   alias SmartABAC.Types
 
+  def list_authorized_policies(request, policies) do
+    policies
+    |> Enum.filter(fn policy ->
+      authorize_one(request, policy)
+    end)
+  end
+
   @doc """
   Returns whether or not any of the `policies` allow the `request` to be executed.
   """
   def authorize(request, policies) do
     policies
     |> Enum.any?(fn policy ->
-      Application.get_env(:smart_abac, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
-      decision = match_rules(request, policy.permissions)
-      Application.get_env(:smart_abac, :debug_pdp) && Logger.info("Decision was #{decision} >>")
-      decision
+      authorize_one(request, policy)
     end)
+  end
+
+  def authorize_one(request, policy) do
+    Application.get_env(:smart_abac, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
+    decision = match_rules(request, policy.permissions)
+    Application.get_env(:smart_abac, :debug_pdp) && Logger.info("Decision was #{decision} >>")
+    decision
   end
 
   @doc """

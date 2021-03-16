@@ -5,25 +5,34 @@ defmodule SmartABAC do
   require Logger
   alias SmartABAC.{Policy, Request, Store, PDP}
 
-  def authorize(request, expand \\ true)
-
-  def authorize(request = %Request{}, expand) do
+  def list_authorized_policies(request, expand \\ true) do
     policies = list_policies()
+
+    request
+    |> setup_request(expand)
+    |> PDP.list_authorized_policies(policies)
+  end
+
+  def authorize(request, expand \\ true) do
+    policies = list_policies()
+
+    request
+    |> setup_request(expand)
+    |> PDP.authorize(policies)
+  end
+
+  def setup_request(request, expand \\ true)
+
+  def setup_request(request = %Request{}, expand) do
     request = if expand, do: Request.expand_attrs(request), else: request
 
     request
     |> Request.add_date_time()
-    |> PDP.authorize(policies)
   end
 
-  def authorize(request, expand) do
-    with {:ok, request} <- build_request(request) do
-      authorize(request, expand)
-    else
-      error ->
-        Logger.warn("Error (#{inspect error}) on request: #{inspect request}")
-        false
-    end
+  def setup_request(request, expand) do
+    {:ok, request} = build_request(request)
+    setup_request(request, expand)
   end
 
   def list_policies do

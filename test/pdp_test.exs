@@ -5,6 +5,14 @@ defmodule PDPTest do
   alias SmartABAC.Types.Attr
 
   describe "verify authorizations" do
+    test "list authorized policies" do
+      {:ok, new_policy} = params_for(:policy) |> SmartABAC.create_policy()
+      {:ok, request} = params_for(:request) |> SmartABAC.build_request()
+
+      authz_policies = PDP.list_authorized_policies(request, [new_policy])
+      assert [_new_policy] = authz_policies
+    end
+
     test "authorize with regular policy" do
       {:ok, new_policy} = params_for(:policy) |> SmartABAC.create_policy()
       {:ok, request} = params_for(:request) |> SmartABAC.build_request()
