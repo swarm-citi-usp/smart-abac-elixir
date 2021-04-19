@@ -16,7 +16,7 @@ The following code section creates an SmartABAC policy that represents this rest
     "subject" => %{"age" => %{"min" => 18}},
     "object" => %{"type" => "securityCamera"},
     "context" => %{},
-    "operations" => ["create", "read", "update"],
+    "operations" => [%{"@type" => "create"}, %{"@type" => "read"}, %{"@type" => "update"}],
   }
 } |> SmartABAC.create_policy()
 
@@ -26,14 +26,14 @@ The following code section creates an SmartABAC policy that represents this rest
 %{
   "subject" => %{"age" => 25, "name" => "Alice"},
   "object" => %{"type" => "securityCamera"},
-  "operations" => ["read"],
+  "operations" => [%{"@type" => "read"}],
 } |> SmartABAC.authorize()
 
 # and this should return false
 %{
   "subject" => %{"age" => 10, "name" => "Alice"},
   "object" => %{"type" => "securityCamera"},
-  "operations" => ["read"],
+  "operations" => [%{"@type" => "read"}],
 } |> SmartABAC.authorize()
 ```
 
@@ -68,10 +68,10 @@ JSON example:
     "subject": {"age": {"min": 18}},
     "object": {"type": "securityCamera"},
     "context": {},
-    "operations": ["create", "read", "update"]
+    "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}]
   }
 }
-""" |> SmartABAC.Serialization.from_json
+""" |> SmartABAC.Serialization.from_json()
 ```
 
 CBOR example:
@@ -79,8 +79,9 @@ CBOR example:
 "A36269646431323334646E616D65781A73656375726974792061636365737320" <>
 "666F72206164756C74736B7065726D697373696F6E73A467636F6E74657874A0" <>
 "666F626A656374A164747970656E736563757269747943616D6572616A6F7065" <>
-"726174696F6E738366637265617465647265616466757064617465677375626A" <>
-"656374A163616765A1636D696E12" |> SmartABAC.Serialization.from_cbor(:hex)
+"726174696F6E7383A165407479706566637265617465A1654074797065647265" <>
+"6164A165407479706566757064617465677375626A656374A163616765A1636D" <>
+"696E12" |> SmartABAC.Serialization.from_cbor(:hex)
 ```
 
 ## Motivation

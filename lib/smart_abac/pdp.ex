@@ -3,6 +3,9 @@ defmodule SmartABAC.PDP do
   require Logger
   alias SmartABAC.Types
 
+  @doc """
+  Returns the list of `policies`, if any, that allow the `request` to be executed.
+  """
   def list_authorized_policies(request, policies) do
     policies
     |> Enum.filter(fn policy ->
@@ -50,22 +53,23 @@ defmodule SmartABAC.PDP do
   end
 
   @doc """
-  Checks whether a number, provided by the request, is within a range, specified in the policy.
+  Checks whether a request attribute "matches" a policy attribute.
+
+  Each type has its own rules for comparison:
+  * range: Checks whether a number, provided by the request, is within a range, specified in the policy.
+  * number: Compares a number, provided by the request, with another number, specified in the policy.
+  * string: Compares a string, provided by the request, against another string, specified in the policy.
+  * string with expanded attributes: Compares *container* attributes, from the request, against string attributes defined in the policy.
+  * object: Compares an object attribute.
   """
   def match_attr("range", {req_name, req_value}, policy_attr) do
     policy_attr.name == req_name and match_range(req_value, policy_attr.value)
   end
 
-  @doc """
-  Compares a number, provided by the request, with another number, specified in the policy.
-  """
   def match_attr("number", {req_name, req_value}, policy_attr) do
     policy_attr.name == req_name and policy_attr.value == req_value
   end
 
-  @doc """
-  Compares *container* attributes, from the request, against string attributes defined in the policy.
-  """
   def match_attr("string", {req_name, req_values}, policy_attr) when is_list(req_values) do
     req_values
     |> Enum.any?(fn req_value ->
@@ -73,23 +77,14 @@ defmodule SmartABAC.PDP do
     end)
   end
 
-  @doc """
-  Compares a string, provided by the request, against another string, specified in the policy.
-  """
   def match_attr("string", {req_name, req_value}, policy_attr) do
     policy_attr.name == req_name and policy_attr.value == req_value
   end
 
-  @doc """
-  Compares an object attribute.
-  """
   def match_attr("object", {req_name, req_value}, policy_attr) do
     policy_attr.name == req_name && match_attrs(req_value, policy_attr.value)
   end
 
-  @doc """
-  Match a numerical value against a range defined as a map.
-  """
   def match_range(value, %{min: min, max: max}), do: value >= min && value <= max
   def match_range(value, %{min: min}), do: value >= min
   def match_range(value, %{max: max}), do: value <= max

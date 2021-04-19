@@ -102,6 +102,18 @@ defmodule PDPTest do
              ])
     end
 
+    test "match request operations with entry" do
+      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [%{"@type" => "read", "entry" => "/temperature"}])
+
+      # request: read anything; policy: read temperature. result: unauthorized
+      refute PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read", "entry" => "/temperature"}])
+
+      # request: read temperature; policy: read anything. result: authorized
+      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [%{"@type" => "read"}])
+
+      refute PDP.match_operations([%{"@type" => "read", "entry" => "/humidity"}], [%{"@type" => "read", "entry" => "/temperature"}])
+    end
+
     test "attribute name must be string, not atom" do
       assert PDP.match_attr(
                "string",
