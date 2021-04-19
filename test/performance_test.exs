@@ -166,7 +166,7 @@ defmodule PerformanceTest do
         subject: attributes(n),
         object: attributes(n),
         context: attributes(n),
-        operations: ["some", "operations"],
+        operations: [%{"@type" => "some"}, %{"@type" => "operations"}],
       }
     }
   end
@@ -234,19 +234,19 @@ defmodule PerformanceTest do
       "1" => %{
         "subject" => %{"id" => "alice"},
         "object" => %{"owner" => "alice"},
-        "operations" => ["read"]
+        "operations" => [%{"@type" => "read"}]
       },
       "3" => %{
         "subject" => %{"household" => %{"id" => "home-1", "role" => "child"}},
         "object" => %{"type" => "lightingAppliance", "household" => %{"id" => "home-1"}},
         "context" => %{"outdoorLuminosity" => 25},
-        "operations" => ["read"]
+        "operations" => [%{"@type" => "read"}]
       },
       "6" => %{
         "subject" => %{"id" => "some-device-x"},
         "object" => %{"id" => "camera1"},
         "context" => %{"year" => 2020, "month" => 1, "day" => 1, "hour" => 17, "minute" => 21},
-        "operations" => ["read"]
+        "operations" => [%{"@type" => "read"}]
       }
     }[id]
     |> SmartABAC.build_request()
@@ -260,14 +260,14 @@ defmodule PerformanceTest do
           "permissions": {
               "subject": {"id": "alice"},
               "object": {"owner": "alice"},
-              "operations": ["create", "read", "update", "delete"]
+              "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}, {"@type": "delete"}]
           }
         }, {
           "id": "4",
           "permissions": {
               "subject": {"id": "camera1"},
               "object": {"id": "lamp1"},
-              "operations": ["read", "update"]
+              "operations": [{"@type": "read"}, {"@type": "update"}]
           }
         }, {
           "id": "6",
@@ -275,7 +275,7 @@ defmodule PerformanceTest do
               "subject": {"id": "some-device-x"},
               "object": {"id": "camera1"},
               "context": {"year": 2020, "month": 1, "day": 1, "hour": 17, "minute": {"min": 20, "max": 25}},
-              "operations": ["read"]
+              "operations": [{"@type": "read"}]
           }
         }
       ]
@@ -290,14 +290,14 @@ defmodule PerformanceTest do
           "permissions": {
               "subject": {"id": "alice"},
               "object": {"owner": "alice"},
-              "operations": ["create", "read", "update", "delete"]
+              "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}, {"@type": "delete"}]
           }
         }, {
           "id": "2",
           "permissions": {
               "subject": {"age": {"min": 18}, "household": {"id": "home-1"}},
               "object": {"type": "securityAppliance", "household": {"id": "home-1"}},
-              "operations": ["read", "update"]
+              "operations": [{"@type": "read"}, {"@type": "update"}]
           }
         }, {
           "id": "3",
@@ -305,14 +305,14 @@ defmodule PerformanceTest do
               "subject": {"household": {"id": "home-1", "role": "child"}},
               "object": {"type": "lightingAppliance", "household": {"id": "home-1"}},
               "context": {"outdoorLuminosity": {"max": 33}},
-              "operations": ["read", "update"]
+              "operations": [{"@type": "read"}, {"@type": "update"}]
           }
         }, {
           "id": "4",
           "permissions": {
               "subject": {"id": "camera1"},
               "object": {"id": "lamp1"},
-              "operations": ["read", "update"]
+              "operations": [{"@type": "read"}, {"@type": "update"}]
           }
         }, {
           "id": "5",
@@ -320,7 +320,7 @@ defmodule PerformanceTest do
               "subject": {"reputation": {"min": 4}},
               "object": {"type": "securityCamera", "household": {"id": "home-1"}, "location": "outdoor"},
               "context": {"hour": {"min": 8, "max": 18}},
-              "operations": ["contract"]
+              "operations": [{"@type": "contract"}]
           }
         }, {
           "id": "6",
@@ -328,7 +328,7 @@ defmodule PerformanceTest do
               "subject": {"id": "some-device-x"},
               "object": {"id": "camera1"},
               "context": {"year": 2020, "month": 6, "day": 30, "hour": 17, "minute": {"min": 20, "max": 25}},
-              "operations": ["read"]
+              "operations": [{"@type": "read"}]
           }
         }
       ]

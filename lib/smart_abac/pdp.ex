@@ -41,7 +41,6 @@ defmodule SmartABAC.PDP do
   Tests whether the request attributes are allowed by a policy.
   """
   Application.get_env(:smart_abac, :debug_pdp) && @decorate log(:debug)
-
   def match_attrs(request_attrs, policy_attrs) do
     policy_attrs
     |> Enum.all?(fn policy_attr ->
@@ -99,13 +98,13 @@ defmodule SmartABAC.PDP do
   @doc """
   Tests whether the request operations are allowed by a policy.
   """
-  Application.get_env(:smart_abac, :debug_pdp) && @decorate log(:debug)
   def match_operations([], _policy_ops), do: false
   def match_operations(_request_ops, []), do: false
-  def match_operations(_request_ops, ["all"]), do: true
+  def match_operations(_request_ops, [%{"@type" => "all"}]), do: true
 
   def match_operations(request_ops, policy_ops) do
-    request_ops
-    |> Enum.all?(&(&1 in policy_ops))
+    Enum.all?(request_ops, fn ro ->
+      Enum.any?(policy_ops, fn po -> match_attrs(ro, po) end)
+    end)
   end
 end
