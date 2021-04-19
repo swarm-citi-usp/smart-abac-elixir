@@ -18,7 +18,7 @@ defmodule PDPTest do
       {:ok, request} = params_for(:request) |> SmartABAC.build_request()
 
       assert PDP.authorize(request, [new_policy])
-      refute PDP.authorize(%{request | operations: ["teleport"]}, [new_policy])
+      refute PDP.authorize(%{request | operations: [%{"@type" => "teleport"}]}, [new_policy])
     end
 
     test "authorize, policy with nested object" do
@@ -83,19 +83,35 @@ defmodule PDPTest do
       assert PDP.match_attrs(Map.delete(request_attrs, "Id"), policy_attrs)
     end
 
+    test "match request operations against policy operations special cases" do
+      refute PDP.match_operations([], [%{"@type" => "read"}])
+      refute PDP.match_operations([%{"@type" => "read"}], [])
+    end
+
     test "match request operations against policy operations" do
-      refute PDP.match_operations([], ["read"])
-      refute PDP.match_operations(["read"], [])
+      assert PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read"}])
 
-      assert PDP.match_operations(["read"], ["read", "update", "delete"])
-      assert PDP.match_operations(["read", "update"], ["read", "update", "delete"])
-      assert PDP.match_operations(["read", "update", "delete"], ["read", "update", "delete"])
+      assert PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}])
+      assert PDP.match_operations([%{"@type" => "read"}, %{"@type" => "update"}], [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}])
+      assert PDP.match_operations([%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}], [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}])
 
-      refute PDP.match_operations(["create", "read", "update", "delete"], [
-               "read",
-               "update",
-               "delete"
+      refute PDP.match_operations([%{"@type" => "create"}, %{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}], [
+               %{"@type" => "read"},
+               %{"@type" => "update"},
+               %{"@type" => "delete"}
              ])
+    end
+
+    test "match request operations with entry" do
+      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [%{"@type" => "read", "entry" => "/temperature"}])
+
+      # request: read anything; policy: read temperature. result: unauthorized
+      refute PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read", "entry" => "/temperature"}])
+
+      # request: read temperature; policy: read anything. result: authorized
+      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [%{"@type" => "read"}])
+
+      refute PDP.match_operations([%{"@type" => "read", "entry" => "/humidity"}], [%{"@type" => "read", "entry" => "/temperature"}])
     end
 
     test "attribute name must be string, not atom" do

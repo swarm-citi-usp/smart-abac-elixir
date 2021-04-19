@@ -11,7 +11,7 @@ defmodule SmartABAC.Request do
     field(:subject, :map, default: %{})
     field(:object, :map, default: %{})
     field(:context, :map, default: %{})
-    field(:operations, {:array, :string})
+    field(:operations, {:array, {:map, :string}}, default: [])
   end
 
   def changeset(params) do

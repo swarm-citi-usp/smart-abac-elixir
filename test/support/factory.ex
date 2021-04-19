@@ -11,7 +11,7 @@ defmodule SmartABAC.Factory do
         subject: %{"id" => "alice"},
         object: %{"owner" => "alice"},
         context: %{"dateTime" => %{"year" => Date.utc_today.year}},
-        operations: ["create"]
+        operations: [%{"@type" => "create"}]
       }
     }
   end
@@ -21,7 +21,7 @@ defmodule SmartABAC.Factory do
       subject: %{"id" => "alice"},
       object: %{"owner" => "alice"},
       context: %{"dateTime" => %{"year" => Date.utc_today.year}},
-      operations: ["create"]
+      operations: [%{"@type" => "create"}]
     }
   end
 
@@ -30,7 +30,7 @@ defmodule SmartABAC.Factory do
       subject: %{"id" => "alice"},
       object: %{"owner" => ["Alice","alice","a l i c e"]},
       context: %{"dateTime" => %{"year" => Date.utc_today.year}},
-      operations: ["create"]
+      operations: [%{"@type" => "create"}]
     }
   end
 end
