@@ -1,41 +1,13 @@
 # SmartABAC
 
-This repo implements a novel Attribute-Based Access Control (ABAC) model that is intended to be run within IoT devices to protect their interactions.
+Elixir implementation of the SmartABAC access control model. [See our paper here](https://ieeexplore.ieee.org/abstract/document/9528856). A C version is [also available](https://github.com/swarm-citi-usp/smart-abac-c).
 
-# Example
+SmartABAC is a new attribute-based access control model that can be embedded in IoT devices with minimal overhead. It provides the following features:
 
-Consider a smart-home use case with the following restriction: _any security camera can be accessed and modified by any adult family member_.
-
-The following code section creates an SmartABAC policy that represents this restriction, and runs some requests against it.
-
-```elixir
-%{
-  "id" => "1234",
-  "name" => "security access for adults",
-  "permissions" => %{
-    "subject" => %{"age" => %{"min" => 18}},
-    "object" => %{"type" => "securityCamera"},
-    "context" => %{},
-    "operations" => [%{"@type" => "create"}, %{"@type" => "read"}, %{"@type" => "update"}],
-  }
-} |> SmartABAC.create_policy()
-
-# to test this policy, we create a request and try to authorize it
-
-# this should return true
-%{
-  "subject" => %{"age" => 25, "name" => "Alice"},
-  "object" => %{"type" => "securityCamera"},
-  "operations" => [%{"@type" => "read"}],
-} |> SmartABAC.authorize()
-
-# and this should return false
-%{
-  "subject" => %{"age" => 10, "name" => "Alice"},
-  "object" => %{"type" => "securityCamera"},
-  "operations" => [%{"@type" => "read"}],
-} |> SmartABAC.authorize()
-```
+- enumerated access policies: lightweight to evaluate
+- typed attributes: increased expressiveness
+- attribute hierarchies: simpler policy administration
+- multi-attribute policies: easy conjunctive policies in enumerated models
 
 # Installation
 
@@ -50,7 +22,39 @@ Add to your `mix.exs` file:
   end
 ```
 
-# Details
+# Example
+
+Consider a smart-home use case with the following restriction: _any security camera can be accessed and modified by any adult family member_.
+
+The following code creates an SmartABAC policy that represents this restriction, and runs some requests against it.
+
+```elixir
+# 1. create and store the policy in memory
+%{
+  "id" => "1234",
+  "name" => "security access for adults",
+  "permissions" => %{
+    "subject" => %{"age" => %{"min" => 18}},
+    "object" => %{"type" => "securityCamera"},
+    "context" => %{},
+    "operations" => [%{"@type" => "create"}, %{"@type" => "read"}, %{"@type" => "update"}],
+  }
+} |> SmartABAC.create_policy()
+
+# 2a. check authorization for a request that's expected to be allowed
+%{
+  "subject" => %{"age" => 25, "name" => "Alice"},
+  "object" => %{"type" => "securityCamera"},
+  "operations" => [%{"@type" => "read"}],
+} |> SmartABAC.authorize()
+
+# 2b. check authorization for a request that's expected to be denied (age < 18)
+%{
+  "subject" => %{"age" => 10, "name" => "Alice"},
+  "object" => %{"type" => "securityCamera"},
+  "operations" => [%{"@type" => "read"}],
+} |> SmartABAC.authorize()
+```
 
 ## Serialization
 
@@ -84,7 +88,7 @@ CBOR example:
 "696E12" |> SmartABAC.Serialization.from_cbor(:hex)
 ```
 
-## Motivation
+# Motivation
 
 This model exists because existing models are either:
 
@@ -98,12 +102,16 @@ This model exists because existing models are either:
 
 # Contributing
 
-1. Download the repo and run the tests:
+Download the repo, write code & tests, and send a PR.
+
+# Citing
+If you use this code in your research, please cite as follows:
 
 ```
-$ git clone git@github.com:swarm-citi-usp/smart-abac-elixir.git
-$ mix deps.get
-$ mix test # run the tests to ensure everything is working
-```
-
-2. Modify the code, **write tests** covering your change, and send a pull request.
+@article{fedrecheski2021smartabac,
+  title={SmartABAC: enabling constrained IoT devices to make complex policy-based access control decisions},
+  author={Fedrecheski, Geovane and De Biase, Laisa CC and Calcina-Ccori, Pablo C and Lopes, Roseli D and Zuffo, Marcelo K},
+  journal={IEEE Internet of Things Journal},
+  year={2021},
+  publisher={IEEE}
+}
