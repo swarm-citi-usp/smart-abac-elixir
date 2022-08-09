@@ -1,3 +1,11 @@
+# Copyright (C) 2022 Geovane Fedrecheski <geonnave@gmail.com>
+#               2022 Universidade de São Paulo
+#               2022 LSI-TEC
+#
+# This file is part of the SwarmOS project, and it is subject to
+# the terms and conditions of the GNU Lesser General Public License v2.1.
+# See the file LICENSE in the top level directory for more details.
+
 defmodule PDPTest do
   use ExUnit.Case
   import SmartABAC.Factory
@@ -91,27 +99,56 @@ defmodule PDPTest do
     test "match request operations against policy operations" do
       assert PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read"}])
 
-      assert PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}])
-      assert PDP.match_operations([%{"@type" => "read"}, %{"@type" => "update"}], [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}])
-      assert PDP.match_operations([%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}], [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}])
-
-      refute PDP.match_operations([%{"@type" => "create"}, %{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}], [
+      assert PDP.match_operations([%{"@type" => "read"}], [
                %{"@type" => "read"},
                %{"@type" => "update"},
                %{"@type" => "delete"}
              ])
+
+      assert PDP.match_operations([%{"@type" => "read"}, %{"@type" => "update"}], [
+               %{"@type" => "read"},
+               %{"@type" => "update"},
+               %{"@type" => "delete"}
+             ])
+
+      assert PDP.match_operations(
+               [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}],
+               [%{"@type" => "read"}, %{"@type" => "update"}, %{"@type" => "delete"}]
+             )
+
+      refute PDP.match_operations(
+               [
+                 %{"@type" => "create"},
+                 %{"@type" => "read"},
+                 %{"@type" => "update"},
+                 %{"@type" => "delete"}
+               ],
+               [
+                 %{"@type" => "read"},
+                 %{"@type" => "update"},
+                 %{"@type" => "delete"}
+               ]
+             )
     end
 
     test "match request operations with entry" do
-      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [%{"@type" => "read", "entry" => "/temperature"}])
+      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [
+               %{"@type" => "read", "entry" => "/temperature"}
+             ])
 
       # request: read anything; policy: read temperature. result: unauthorized
-      refute PDP.match_operations([%{"@type" => "read"}], [%{"@type" => "read", "entry" => "/temperature"}])
+      refute PDP.match_operations([%{"@type" => "read"}], [
+               %{"@type" => "read", "entry" => "/temperature"}
+             ])
 
       # request: read temperature; policy: read anything. result: authorized
-      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [%{"@type" => "read"}])
+      assert PDP.match_operations([%{"@type" => "read", "entry" => "/temperature"}], [
+               %{"@type" => "read"}
+             ])
 
-      refute PDP.match_operations([%{"@type" => "read", "entry" => "/humidity"}], [%{"@type" => "read", "entry" => "/temperature"}])
+      refute PDP.match_operations([%{"@type" => "read", "entry" => "/humidity"}], [
+               %{"@type" => "read", "entry" => "/temperature"}
+             ])
     end
 
     test "attribute name must be string, not atom" do
