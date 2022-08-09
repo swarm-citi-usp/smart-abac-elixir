@@ -1,3 +1,11 @@
+# Copyright (C) 2022 Geovane Fedrecheski <geonnave@gmail.com>
+#               2022 Universidade de São Paulo
+#               2022 LSI-TEC
+#
+# This file is part of the SwarmOS project, and it is subject to
+# the terms and conditions of the GNU Lesser General Public License v2.1.
+# See the file LICENSE in the top level directory for more details.
+
 defmodule SmartABAC.PDP do
   use SmartABAC.LogDecorator
   require Logger
@@ -24,7 +32,9 @@ defmodule SmartABAC.PDP do
   end
 
   def authorize_one(request, policy) do
-    Application.get_env(:smart_abac, :debug_pdp) && Logger.info("<< Processing policy ##{policy.id}")
+    Application.get_env(:smart_abac, :debug_pdp) &&
+      Logger.info("<< Processing policy ##{policy.id}")
+
     decision = match_rules(request, policy.permissions)
     Application.get_env(:smart_abac, :debug_pdp) && Logger.info("Decision was #{decision} >>")
     decision
@@ -44,6 +54,7 @@ defmodule SmartABAC.PDP do
   Tests whether the request attributes are allowed by a policy.
   """
   Application.get_env(:smart_abac, :debug_pdp) && @decorate log(:debug)
+
   def match_attrs(request_attrs, policy_attrs) do
     policy_attrs
     |> Enum.all?(fn policy_attr ->
