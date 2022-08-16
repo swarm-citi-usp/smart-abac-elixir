@@ -1,3 +1,11 @@
+# Copyright (C) 2022 Geovane Fedrecheski <geonnave@gmail.com>
+#               2022 Universidade de São Paulo
+#               2022 LSI-TEC
+#
+# This file is part of the SwarmOS project, and it is subject to
+# the terms and conditions of the GNU Lesser General Public License v2.1.
+# See the file LICENSE in the top level directory for more details.
+
 defmodule PerformanceTest do
   use ExUnit.Case
   require Logger
@@ -22,7 +30,10 @@ defmodule PerformanceTest do
 
     jl = String.length(policy_json)
     cl = String.length(policy_cbor)
-    Logger.info("JSON length: #{jl}, CBOR length: #{cl}, ratio: #{Float.round(cl / jl, 2) * 100}%")
+
+    Logger.info(
+      "JSON length: #{jl}, CBOR length: #{cl}, ratio: #{Float.round(cl / jl, 2) * 100}%"
+    )
   end
 
   @tag :skip
@@ -51,17 +62,23 @@ defmodule PerformanceTest do
     for p <- policies do
       SmartABAC.Store.update(p)
     end
+
     {:ok, request} = paper_request("3")
     assert SmartABAC.authorize(request)
 
     Process.sleep(1000)
-    Process.sleep(100+:random.uniform(100))
+    Process.sleep(100 + :random.uniform(100))
     start_ms = start()
+
     for _i <- 1..3000 do
       SmartABAC.authorize(request)
     end
+
     spent_ms = finish(start_ms)
-    Logger.debug("The time taken to authorize 1 request against 6 policies, 3000 times, was #{spent_ms} ms")
+
+    Logger.debug(
+      "The time taken to authorize 1 request against 6 policies, 3000 times, was #{spent_ms} ms"
+    )
   end
 
   @tag :skip
@@ -74,25 +91,35 @@ defmodule PerformanceTest do
     for p <- policies do
       SmartABAC.Store.update(p)
     end
+
     {:ok, request} = paper_request("1")
     assert SmartABAC.authorize(request)
 
     t = 20
-    sum = Enum.reduce(0..t, 0, fn _j, acc ->
-      Process.sleep(25+:random.uniform(25))
-      start_ms = start()
-      for _i <- 1..3000 do
-        SmartABAC.authorize(request)
-      end
-      spent_ms = finish(start_ms)
-      acc + spent_ms
-    end)
+
+    sum =
+      Enum.reduce(0..t, 0, fn _j, acc ->
+        Process.sleep(25 + :random.uniform(25))
+        start_ms = start()
+
+        for _i <- 1..3000 do
+          SmartABAC.authorize(request)
+        end
+
+        spent_ms = finish(start_ms)
+        acc + spent_ms
+      end)
+
     avg = sum / t
-    Logger.debug("The time taken to authorize 1 request against 3 policies, 3000 times, was #{avg} ms")
+
+    Logger.debug(
+      "The time taken to authorize 1 request against 3 policies, 3000 times, was #{avg} ms"
+    )
   end
 
   def wrapper_run(steps_m, steps_n) do
     setup_results_csv(steps_m, steps_n)
+
     for m <- Enum.shuffle(steps_m) do
       for n <- Enum.shuffle(steps_n) do
         runs = 5
@@ -112,12 +139,14 @@ defmodule PerformanceTest do
 
   def run(m, n) do
     Logger.debug(">>> Will run for n=#{n} and m=#{m}")
+
     policies =
       load_policies(m, n)
       |> case do
         {:ok, policies} ->
           Logger.debug("Using loaded policies")
           policies
+
         {:error, _} ->
           Logger.debug("Generating policies")
           policies = generate(m, n)
@@ -130,7 +159,7 @@ defmodule PerformanceTest do
     {:ok, request} = params_for(:request_expanded) |> SmartABAC.build_request()
 
     Process.sleep(3000)
-    Process.sleep(100+:random.uniform(100))
+    Process.sleep(100 + :random.uniform(100))
     start_ms = start()
     assert PDP.authorize(request, policies)
     spent_ms = finish(start_ms)
@@ -166,7 +195,7 @@ defmodule PerformanceTest do
         subject: attributes(n),
         object: attributes(n),
         context: attributes(n),
-        operations: [%{"@type" => "some"}, %{"@type" => "operations"}],
+        operations: [%{"@type" => "some"}, %{"@type" => "operations"}]
       }
     }
   end
@@ -178,10 +207,13 @@ defmodule PerformanceTest do
       |> case do
         "string" ->
           %{"key-#{:rand.uniform(100_000)}" => "some value"}
+
         "number" ->
           %{"key-#{:rand.uniform(100_000)}" => 123}
+
         "range" ->
           %{"key-#{:rand.uniform(100_000)}" => %{"min" => 123, "max" => 456}}
+
         "object" ->
           %{"key-#{:rand.uniform(100_000)}" => %{"inner key" => "inner value"}}
       end
@@ -199,6 +231,7 @@ defmodule PerformanceTest do
       {:ok, file} ->
         Logger.debug("Parsing json")
         Serialization.from_json(IO.read(file, :all))
+
       error ->
         error
     end
@@ -225,7 +258,7 @@ defmodule PerformanceTest do
 
   def results_filename(steps_m, steps_n) do
     pathname = Path.join(:code.priv_dir(:smart_abac), "/benchmark/")
-    filename = "results_#{inspect steps_m}-#{inspect steps_n, charlists: :as_lists}.csv"
+    filename = "results_#{inspect(steps_m)}-#{inspect(steps_n, charlists: :as_lists)}.csv"
     {pathname, filename}
   end
 
@@ -254,84 +287,84 @@ defmodule PerformanceTest do
 
   def paper_3_policies do
     """
-      [
-        {
-          "id": "1",
-          "permissions": {
-              "subject": {"id": "alice"},
-              "object": {"owner": "alice"},
-              "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}, {"@type": "delete"}]
-          }
-        }, {
-          "id": "4",
-          "permissions": {
-              "subject": {"id": "camera1"},
-              "object": {"id": "lamp1"},
-              "operations": [{"@type": "read"}, {"@type": "update"}]
-          }
-        }, {
-          "id": "6",
-          "permissions": {
-              "subject": {"id": "some-device-x"},
-              "object": {"id": "camera1"},
-              "context": {"year": 2020, "month": 1, "day": 1, "hour": 17, "minute": {"min": 20, "max": 25}},
-              "operations": [{"@type": "read"}]
-          }
+    [
+      {
+        "id": "1",
+        "permissions": {
+            "subject": {"id": "alice"},
+            "object": {"owner": "alice"},
+            "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}, {"@type": "delete"}]
         }
-      ]
-      """
+      }, {
+        "id": "4",
+        "permissions": {
+            "subject": {"id": "camera1"},
+            "object": {"id": "lamp1"},
+            "operations": [{"@type": "read"}, {"@type": "update"}]
+        }
+      }, {
+        "id": "6",
+        "permissions": {
+            "subject": {"id": "some-device-x"},
+            "object": {"id": "camera1"},
+            "context": {"year": 2020, "month": 1, "day": 1, "hour": 17, "minute": {"min": 20, "max": 25}},
+            "operations": [{"@type": "read"}]
+        }
+      }
+    ]
+    """
   end
 
   def paper_policies do
     """
-      [
-        {
-          "id": "1",
-          "permissions": {
-              "subject": {"id": "alice"},
-              "object": {"owner": "alice"},
-              "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}, {"@type": "delete"}]
-          }
-        }, {
-          "id": "2",
-          "permissions": {
-              "subject": {"age": {"min": 18}, "household": {"id": "home-1"}},
-              "object": {"type": "securityAppliance", "household": {"id": "home-1"}},
-              "operations": [{"@type": "read"}, {"@type": "update"}]
-          }
-        }, {
-          "id": "3",
-          "permissions": {
-              "subject": {"household": {"id": "home-1", "role": "child"}},
-              "object": {"type": "lightingAppliance", "household": {"id": "home-1"}},
-              "context": {"outdoorLuminosity": {"max": 33}},
-              "operations": [{"@type": "read"}, {"@type": "update"}]
-          }
-        }, {
-          "id": "4",
-          "permissions": {
-              "subject": {"id": "camera1"},
-              "object": {"id": "lamp1"},
-              "operations": [{"@type": "read"}, {"@type": "update"}]
-          }
-        }, {
-          "id": "5",
-          "permissions": {
-              "subject": {"reputation": {"min": 4}},
-              "object": {"type": "securityCamera", "household": {"id": "home-1"}, "location": "outdoor"},
-              "context": {"hour": {"min": 8, "max": 18}},
-              "operations": [{"@type": "contract"}]
-          }
-        }, {
-          "id": "6",
-          "permissions": {
-              "subject": {"id": "some-device-x"},
-              "object": {"id": "camera1"},
-              "context": {"year": 2020, "month": 6, "day": 30, "hour": 17, "minute": {"min": 20, "max": 25}},
-              "operations": [{"@type": "read"}]
-          }
+    [
+      {
+        "id": "1",
+        "permissions": {
+            "subject": {"id": "alice"},
+            "object": {"owner": "alice"},
+            "operations": [{"@type": "create"}, {"@type": "read"}, {"@type": "update"}, {"@type": "delete"}]
         }
-      ]
-      """
+      }, {
+        "id": "2",
+        "permissions": {
+            "subject": {"age": {"min": 18}, "household": {"id": "home-1"}},
+            "object": {"type": "securityAppliance", "household": {"id": "home-1"}},
+            "operations": [{"@type": "read"}, {"@type": "update"}]
+        }
+      }, {
+        "id": "3",
+        "permissions": {
+            "subject": {"household": {"id": "home-1", "role": "child"}},
+            "object": {"type": "lightingAppliance", "household": {"id": "home-1"}},
+            "context": {"outdoorLuminosity": {"max": 33}},
+            "operations": [{"@type": "read"}, {"@type": "update"}]
+        }
+      }, {
+        "id": "4",
+        "permissions": {
+            "subject": {"id": "camera1"},
+            "object": {"id": "lamp1"},
+            "operations": [{"@type": "read"}, {"@type": "update"}]
+        }
+      }, {
+        "id": "5",
+        "permissions": {
+            "subject": {"reputation": {"min": 4}},
+            "object": {"type": "securityCamera", "household": {"id": "home-1"}, "location": "outdoor"},
+            "context": {"hour": {"min": 8, "max": 18}},
+            "operations": [{"@type": "contract"}]
+        }
+      }, {
+        "id": "6",
+        "permissions": {
+            "subject": {"id": "some-device-x"},
+            "object": {"id": "camera1"},
+            "context": {"year": 2020, "month": 6, "day": 30, "hour": 17, "minute": {"min": 20, "max": 25}},
+            "operations": [{"@type": "read"}]
+        }
+      }
+    ]
+    """
   end
 end
